@@ -98,3 +98,16 @@ def handler(url: str, method: str = "GET"):
         (_get_handlers if method.upper() == "GET" else _post_handlers)[url] = func
         return func
     return handler_decorator
+
+def post(req: RequestHandler):
+    """
+    Extract the POST body from a request.
+    """
+    print(type(req))
+    if not "Content-Length" in req.headers.keys():
+        return None
+    try:
+        content_length = int(req.headers["Content-Length"])
+    except:
+        return None
+    return req.rfile.read(content_length)

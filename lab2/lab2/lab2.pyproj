@@ -28,6 +28,7 @@
     <Compile Include="server.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="after.html" />
     <Content Include="index.html" />
     <Content Include="WebPage1.html" />
   </ItemGroup>
