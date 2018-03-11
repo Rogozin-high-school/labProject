@@ -1,8 +1,14 @@
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
+from socketserver import ThreadingMixIn
+
+
  
 _get_handlers = {}
 _post_handlers = {}
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    pass
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -10,20 +16,32 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         handler = self.path.split("/")[1].split("#")[0].split("?")[0]
 
+
         if handler in _get_handlers.keys():
             response, headers, content = _get_handlers[handler](self)
             
             self.send_response(response)
             for h, v in headers.items():
                 self.send_header(h, v)
+            if "Access-Control-Allow-Origin" not in headers.keys():
+                self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
 
-            self.wfile.write(bytes(content))
+            self.wfile.write(bytes(content, "utf8") if type(content) == str else content)
 
         else:
-            self.send_response(404)
-            self.end_headers()
-            self.wfile.write(bytes("404 - Not Found"))
+            page, mime = static_files.get(self.path)
+
+            if page is None:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(bytes("404 - Not Found", "utf8"))
+
+            else:
+                self.send_response(200)
+                self.send_header("Conten-Type", mime)
+                self.end_headers()
+                self.wfile.write(bytes(page, "utf-8") if type(page) == str else page)
         return
 
     def do_POST(self):
@@ -37,9 +55,11 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.send_response(response)
             for h, v in headers.items():
                 self.send_header(h, v)
+            if "Access-Control-Allow-Origin" not in headers.keys():
+                self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
 
-            self.wfile.write(bytes(content, "utf8"))
+            self.wfile.write(bytes(content, "utf8") if type(content) == str else content)
 
         else:
             self.send_response(404)
@@ -62,16 +82,16 @@ class RequestHandler(BaseHTTPRequestHandler):
             get_dict[part[0]] = part[1]
         return get_dict
 
-def run():
-    print "Running server..."
+def run() -> None:
+    print('Running server...')
     server_address = ('', 9090)
-    httpd = HTTPServer(server_address, RequestHandler)
+    httpd = ThreadedHTTPServer(server_address, RequestHandler)
     thread = threading.Thread(target=httpd.serve_forever)
     thread.start()
     return httpd
 
 
-def handler(url, method = "GET"):
+def handler(url: str, method: str = "GET"):
     global _get_handlers, _post_handlers
     def handler_decorator(func):
         global handlers
