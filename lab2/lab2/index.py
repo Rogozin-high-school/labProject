@@ -8,8 +8,7 @@ def printL(req):
 
 @handler("af","POST")
 def answerpost(req):
-    data=post(req)
-    
-    return 200,{"Content-type":"text/html"},data #return_code,headers,code of the page(here it is html)
+    data=(str(post(req))).split('&')
+    return 200,{"Content-type":"text/html"},data[0] #return_code,headers,code of the page(here it is html)
 
 run()
