@@ -2,7 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import threading
 from socketserver import ThreadingMixIn
 
-
+import static_files
  
 _get_handlers = {}
 _post_handlers = {}
