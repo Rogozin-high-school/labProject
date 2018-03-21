@@ -8,7 +8,7 @@ def printL(req):
         if getdict["answer"] == "fail":
             data = "<script>alert('This is not the correct password')</script>"
         else:
-            data = "<script>alert('changing the parameters of the get request wont do something)</script>"
+            data = "<script>alert('changing the parameters of the get request wont do something')</script>"
     with open('index.html', 'r') as myfile:
         data+=myfile.read().replace('\n', '')
     #return_code,headers,code of the page(here it is html)
