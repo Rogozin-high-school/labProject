@@ -11,7 +11,6 @@ def printL(req):
             data = "<script>alert('changing the parameters of the get request wont do something')</script>"
     with open('index.html', 'r') as myfile:
         data+=myfile.read().replace('\n', '')
-    #return_code,headers,code of the page(here it is html)
     return 200,{"Content-type": "text/html"},data
 
 @handler("control","POST")
@@ -21,11 +20,11 @@ def answerpost(req):
     if(password== "Skyro"):
         with open('control_panel.html', 'r') as myfile:
             data=myfile.read().replace('\n', '')
+            data=str(data)
+            data=data[9:]
         print(data[0])
         return 200,{"Content-type": "text/html"},data
     else:
         return 302,{"Location": "/index?answer=fail"},data 
 
 run()
-
-
