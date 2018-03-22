@@ -12,8 +12,6 @@
     <OutputPath>.</OutputPath>
     <Name>lab2</Name>
     <RootNamespace>lab2</RootNamespace>
-    <InterpreterId>{5252c867-c89f-4c37-a937-1217548763f3}</InterpreterId>
-    <InterpreterVersion>3.5</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,9 +37,7 @@
     <Content Include="index.html" />
     <Content Include="control_panel.html" />
   </ItemGroup>
-  <ItemGroup>
-    <InterpreterReference Include="{5252c867-c89f-4c37-a937-1217548763f3}\3.5" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
   </PropertyGroup>
