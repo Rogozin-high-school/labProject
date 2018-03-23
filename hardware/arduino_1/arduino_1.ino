@@ -1,20 +1,19 @@
 #include <SoftwareSerial.h>
 
-SoftwareSerial comm(2, 3);
+SoftwareSerial comm(10, 11);
 
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(9600);
   comm.begin(9600);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if (comm.available() == 0) {
-    return;
+  if (Serial.available() > 0) {
+    comm.write(Serial.read());
   }
-  comm.print("Got: ");
-  while (comm.available() > 0) {
-    comm.print((char)comm.read());
-    delay(10);
+  if (comm.available() > 0) {
+    Serial.write(comm.read());
   }
 }
