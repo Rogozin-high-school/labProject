@@ -3,14 +3,17 @@ The electricity module should help us with the mathematics required for converti
 quantities (as magnetic field vectors) to the required electrical quantities (voltage, current).
 """
 
+import numpy as np
+
 # Mathematical & Physical constants that can help us later
 π = 3.1415926535
 μ0 = 4e-7 * π
 
-def coil_field(coil_radius, coil_length, current, N):
+def coil_field(coil_radius, current, N):
     """ To calculate the field of a Helmholtz coil and return the magnitude of the field"""
-    pass
+    return μ0 * N * current / (2 * coil_radius)
 
-def field_coil(coil_radius, coil_length, N, field):
+def field_coil(coil_radius, N, field):
     """ To calculate the current required for creating a magnetic field. Return value in Amperes """
-    pass
+    return 2 * field * coil_radius / (μ0 * N)
+
