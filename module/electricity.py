@@ -17,3 +17,10 @@ def field_coil(coil_radius, N, field):
     """ To calculate the current required for creating a magnetic field. Return value in Amperes """
     return 2 * field * coil_radius / (μ0 * N)
 
+def ohm_current(v, r):
+    """ Calculates the circuit required current for a certain voltage and resistance, according to Ohm's law """
+    return v / r
+
+def ohm_voltage(i, r):
+    """ Calculates the circuit voltage by current and resistance, according to Ohm's law """
+    return i * r
