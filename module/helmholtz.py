@@ -2,6 +2,15 @@
 This module communicates with the Helmholtz coils via a serial interface.
 It creates a Python interface for sending and receiving commands in their purest
 form, as described in the TDK-Lambda ZUP60-3.5 manual.
+
+Remarks:
+1.  One ZUP class can control multiple Helmholtz coils (multiple power supplies)
+2.  The helmholtz coils will be addressed with a unique ID (or something similar).
+    The protocol of communication will be set on the Arduino. Basic structure will
+    be:
+                             <-> Power Supply
+        Computer <-> Arduino <-> Power Supply
+                             <-> Power Supply
 """
 
 class ZUP(object):
