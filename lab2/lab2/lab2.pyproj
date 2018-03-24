@@ -12,6 +12,7 @@
     <OutputPath>.</OutputPath>
     <Name>lab2</Name>
     <RootNamespace>lab2</RootNamespace>
+    <InterpreterId>Global|PythonCore|3.6-32</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +23,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Field.py" />
     <Compile Include="http_helper.py">
       <SubType>Code</SubType>
     </Compile>
@@ -35,15 +37,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="server.py" />
-    <Compile Include="Trajectorys.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Trajectory.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="index.html" />
     <Content Include="control_panel.html" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.6-32" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
   </PropertyGroup>

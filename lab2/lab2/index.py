@@ -1,7 +1,9 @@
 from server import handler,run,post
 from server import RequestHandler
+import Math_module as mm
 @handler("index")
 def printL(req):
+    mm.main()
     data=""
     if "?" in req.path:
         getdict=req.parse_get()
@@ -11,7 +13,6 @@ def printL(req):
             data = "<script>alert('changing the parameters of the get request wont do something')</script>"
     with open('index.html', 'r') as myfile:
         data+=myfile.read().replace('\n', '')
-    #return_code,headers,code of the page(here it is html)
     return 200,{"Content-type": "text/html"},data
 
 @handler("control","POST")
@@ -21,6 +22,8 @@ def answerpost(req):
     if(password== "Skyro"):
         with open('control_panel.html', 'r') as myfile:
             data=myfile.read().replace('\n', '')
+            data=str(data)
+            data=data[9:]
         print(data[0])
         return 200,{"Content-type": "text/html"},data
     else:

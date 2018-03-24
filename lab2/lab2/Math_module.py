@@ -1,2 +1,4 @@
-import Trajectorys.py
- 
+import Trajectory
+import Field
+
+

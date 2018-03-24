@@ -11,6 +11,7 @@ class PolarTrajectory(Trajectory):
     
     def disposition(self,t) -> np.ndarray:
         print("Polar") 
+        
 
 class GeocentricTrajectory(Trajectory):
 
