@@ -1,7 +1,7 @@
 #include <MPU9250_asukiaaa.h>
 
 MPU9250 sensor;
-uint16_t mX, mY, mZ;
+float mX, mY, mZ;
 float mDirection;
 
 void setup() {
