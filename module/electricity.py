@@ -10,7 +10,7 @@ import numpy as np
 μ0 = 4e-7 * π
 
 def coil_field(coil_radius, current, N):
-    """ To calculate the field of a Helmholtz coil and return the magnitude of the field"""
+    """ To calculate the field of a Helmholtz coil and return the magnitude of the field """
     return μ0 * N * current / (2 * coil_radius)
 
 def field_coil(coil_radius, N, field):
