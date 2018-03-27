@@ -26,4 +26,5 @@ void loop() {
   Serial.print(mZ);
   Serial.print(", ");
   Serial.println(mDirection);
+  delay(50);
 }
