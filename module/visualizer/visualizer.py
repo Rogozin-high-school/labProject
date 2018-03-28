@@ -19,7 +19,10 @@ _HTML =\
 </html>
 """
 
-def create_driver():
+def create_window():
+    """
+    Creates a UI window. Parmeterless and returns a selenium.webdriver.Chrome
+    """
     global _HTML
 
     driver = webdriver.Chrome()
