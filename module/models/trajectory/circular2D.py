@@ -1,7 +1,7 @@
 from .base import Trajectory
 import numpy as np
 
-class PolarTrajectory2D(Trajectory):
+class CircularTrajectory2D(Trajectory):
     """
     Mathematical model of a polar trajectory
     """
