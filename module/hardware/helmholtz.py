@@ -32,3 +32,27 @@ class ZUP(object):
         """ Connects to a ZUP device. """
         raise NotImplementedError\
             ("The connect method of the class ZUP was not yet implemented.")
+
+			
+"""
+This is a test script I have created to communicate with the power supply.
+We can use it to create the communication port. 
+After the class creation is done, we may want to remove this code.
+"""
+
+import serial
+import threading
+import time
+
+s = serial.Serial("COM13", 9600, 8, serial.PARITY_NONE, 1, 500, True, False, False, 500)
+s.close()
+s.open()
+
+i = input()
+while i != "exit":
+    s.write(bytes(i, "ascii"))
+    time.sleep(0.015)
+    if (s.in_waiting):
+        print(s.readline())
+    i = input()
+s.close()
