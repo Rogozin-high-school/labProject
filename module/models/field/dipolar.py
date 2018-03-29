@@ -5,5 +5,5 @@ class DipolarField(Field):
     """
     The mathematical model of a Dipole based field.
     """
-    def disposition(self, vec3) -> np.ndarray:
+    def field(self, vec3) -> np.ndarray:
         print("Dipole") 
