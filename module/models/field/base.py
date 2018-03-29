@@ -6,5 +6,5 @@ class Field(ABC):
     Abstract class to represent a magnetic field.
     """
     @abstractmethod
-    def disposition(self, vec3) -> np.ndarray:
+    def field(self, vec3) -> np.ndarray:
         pass

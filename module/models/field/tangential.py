@@ -1,4 +1,4 @@
-from .base import field
+from .base import Field
 import numpy as np
 
 class TangentialField(Field):
