@@ -3,7 +3,6 @@ from server import RequestHandler
 import Math_module as mm
 @handler("index")
 def printL(req):
-    mm.main()
     data=""
     if "?" in req.path:
         getdict=req.parse_get()
