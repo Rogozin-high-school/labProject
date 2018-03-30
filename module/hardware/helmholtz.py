@@ -97,7 +97,7 @@ class ZUP(object):
         if self.ser.in_waiting:
             return str(self.ser.readline(), "ascii")[:-2]
     
-    def addr(self, a : int) -> bool:
+    def addr(self, a : int) -> ZUP:
         """
         Sends an :ADDRn; command. 
         a - number 1-31, symbols which ZUP device should comply with the next commands.
@@ -107,9 +107,9 @@ class ZUP(object):
             raise ValueError("Address must be between 1 and 31")
 
         self.send(":ADR{0:0>2};".format(a))
-        return True
+        return self
 
-    def set_volt(self, volt : float) -> bool:
+    def set_volt(self, volt : float) -> ZUP:
         """
         Sets the output voltage value in volts. Thie programmed voltage is the actual output
         at constant-voltage mode or the voltage limit at constant-current mode.
@@ -121,9 +121,9 @@ class ZUP(object):
             raise ValueError("Voltage must be between 0 and 60")
 
         self.send(":VOL{:05.2f};".format(volt))
-        return True
+        return self
 
-    def clear(self) -> bool:
+    def clear(self) -> ZUP:
         """
         Clears the communication buffer and the following registers:
             1. Operational status register
@@ -131,9 +131,9 @@ class ZUP(object):
             3. Programming error register
         """
         self.send(":DCL;")
-        return True
+        return self
 
-    def set_remote(self, rmt : int) -> None:
+    def set_remote(self, rmt : int) -> ZUP:
         """
         Sets the power supply to local or remote mode.
         rmt - 0: Transition from remote to local mode
@@ -144,7 +144,7 @@ class ZUP(object):
             raise Exception("Remote mode shouldbe between 0 and 2")
 
         self.send(":RMT{:d};".format(rmt))
-        return True
+        return self
 
     def get_remote(self) -> RemoteMode:
         """
@@ -182,7 +182,7 @@ class ZUP(object):
 
         return float(self.send(":VOL?;")[2:])
 
-    def set_amp(self, amp : float) -> None:
+    def set_amp(self, amp : float) -> ZUP:
         """
         Sets the output current in Amperes. This programmed currnet is the actual output voltage at
         constant-current mode or the current limit in constnat-voltage mode. 
@@ -192,7 +192,7 @@ class ZUP(object):
             raise ValueError("Current can only be between 0A and 3.5A")
 
         self.send(":CUR{:05.3f};".format(amp))
-        return True
+        return self
 
     def get_p_amp(self) -> float:
         """
@@ -208,7 +208,7 @@ class ZUP(object):
 
         return float(self.send(":CUR?;")[2:])
 
-    def set_out(self, out : OutputMode) -> bool:
+    def set_out(self, out : OutputMode) -> ZUP:
         """
         Sets the output to On or Off.
         """
@@ -220,7 +220,7 @@ class ZUP(object):
                 raise ValueError("Output mode must be 0 or 1")
 
         self.send(":OUT{:d};".format(out)) 
-        return True
+        return self
 
     def get_out(self) -> OutputMode:
         """
@@ -229,7 +229,7 @@ class ZUP(object):
 
         return OutputMode(int(self.send(":OUT?;")[2:]))
 
-    def set_foldback(self, fld : FoldbackAction) -> bool:
+    def set_foldback(self, fld : FoldbackAction) -> ZUP:
         """
         Sets the foldback protection to On or Off. 
         """
@@ -241,7 +241,7 @@ class ZUP(object):
                 raise ValueError("Foldback action must be between 0 and 2")
 
         self.send(":FLD{:d};".format(fld))
-        return True
+        return self
 
     def get_foldback(self) -> FoldbackStatus:
         """
