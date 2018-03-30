@@ -61,31 +61,31 @@ class StatusRegister(object):
         """
         Constant Current - returns True if the supply is in constant current mode.
         """
-        return self.s[9] == "1"
+        return self.s[2] == "1"
 
     def cv(self) -> bool:
         """
         Constant Voltage - returns True if the supply is in constant voltage mode.
         """
-        return self.s[9] == "0"
+        return self.s[2] == "0"
 
     def foldback(self) -> FoldbackStatus:
         """
         Returns the foldback protection status.
         """
-        return FoldbackStatus(int(self.s[8]))
+        return FoldbackStatus(int(self.s[3]))
 
     def autorestart(self) -> AutoRestartMode:
         """
         Returns the auto restart mode.
         """
-        return AutoRestartMode(int(self.s[7]))
+        return AutoRestartMode(int(self.s[4]))
 
     def output(self) -> OutputMode:
         """
         Returns the output mode.
         """
-        return OutputMode(int(self.s[6]))
+        return OutputMode(int(self.s[5]))
 
     def srf(self):
         raise NotImplementedError()
@@ -360,8 +360,12 @@ class ZUP(object):
 
         return OutputMode(int(self.send(":AST?;")[2:]))
 
-    def get_status(self):
-        raise NotImplementedError()
+    def get_status(self) -> StatusRegister:
+        """
+        Returns the status register contents.
+        """
+
+        return StatusRegister(self.send(":STA?;"))
 
     def get_alarm(self):
         raise NotImplementedError()
