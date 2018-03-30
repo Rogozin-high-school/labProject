@@ -8,14 +8,15 @@ import numpy as np
 # Mathematical & Physical constants that can help us later
 π = 3.1415926535
 μ0 = 4e-7 * π
+c = μ0 * (4 / 5) ** (3 / 2)
 
-def coil_field(coil_radius, current, N):
-    """ To calculate the field of a Helmholtz coil and return the magnitude of the field """
-    return μ0 * N * current / (2 * coil_radius)
+def coil_field(R, i, N):
+    """ To calculate the field of a pair of Helmholtz coils and return the magnitude of the field """
+    return c * N * i / R
 
-def field_coil(coil_radius, N, field):
+def field_coil(R, N, B):
     """ To calculate the current required for creating a magnetic field. Return value in Amperes """
-    return 2 * field * coil_radius / (μ0 * N)
+    return B * R / (N * c)
 
 def ohm_current(v, r):
     """ Calculates the circuit required current for a certain voltage and resistance, according to Ohm's law """
