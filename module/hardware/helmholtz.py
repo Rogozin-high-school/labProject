@@ -75,7 +75,7 @@ class ZUP(object):
         if self.ser.in_waiting:
             return str(self.ser.readline(), "ascii")[:-2]
     
-    def addr(self, a : int):
+    def addr(self, a : int) -> bool:
         """
         Sends an :ADDRn; command. 
         a - number 1-31, symbols which ZUP device should comply with the next commands.
@@ -87,7 +87,7 @@ class ZUP(object):
         self.send(":ADR{0:0>2};".format(a))
         return True
 
-    def set_volt(self, volt : float):
+    def set_volt(self, volt : float) -> bool:
         """
         Sets the output voltage value in volts. Thie programmed voltage is the actual output
         at constant-voltage mode or the voltage limit at constant-current mode.
@@ -101,7 +101,7 @@ class ZUP(object):
         self.send(":VOL{:05.2f};".format(volt))
         return True
 
-    def clear(self):
+    def clear(self) -> bool:
         """
         Clears the communication buffer and the following registers:
             1. Operational status register
@@ -111,7 +111,7 @@ class ZUP(object):
         self.send(":DCL;")
         return True
 
-    def set_remote(self, rmt):
+    def set_remote(self, rmt : int) -> None:
         """
         Sets the power supply to local or remote mode.
         rmt - 0: Transition from remote to local mode
@@ -124,7 +124,7 @@ class ZUP(object):
         self.send(":RMT{:d};".format(rmt))
         return True
 
-    def get_remote(self):
+    def get_remote(self) -> RemoteMode:
         """
         Returns the remote/local setting.
         """
@@ -132,35 +132,35 @@ class ZUP(object):
         rmt = int(self.send(":RMT?;")[2])
         return RemoteMode(rmt)
 
-    def get_model(self):
+    def get_model(self) -> str:
         """
         Returns the power supply model identification as an ASCII string.
         """
 
         return self.send(":MDL?;")
 
-    def get_software(self):
+    def get_software(self) -> str:
         """
         Returns the software version as an ASCII string
         """
 
         return self.send(":REV?;")
 
-    def get_p_volt(self):
+    def get_p_volt(self) -> float:
         """
         Returns the present programmed output voltage value.
         """
 
         return float(self.send(":VOL!;")[2:])
 
-    def get_volt(self):
+    def get_volt(self) -> float:
         """
         Returns the actual output voltage. The actual voltage range is the same as the programming range.
         """
 
         return float(self.send(":VOL?;")[2:])
 
-    def set_amp(self, amp):
+    def set_amp(self, amp : float) -> None:
         """
         Sets the output current in Amperes. This programmed currnet is the actual output voltage at
         constant-current mode or the current limit in constnat-voltage mode. 
@@ -172,18 +172,16 @@ class ZUP(object):
         self.send(":CUR{:05.3f};".format(amp))
         return True
 
-    def get_p_amp(self):
+    def get_p_amp(self) -> float:
         """
         Returns the present programmed output current.
         """
 
         return float(self.send(":CUR!;")[2:])
 
-    def get_amp(self):
+    def get_amp(self) -> float:
         """
         Returns the actual output current.
         """
 
         return float(self.send(":CUR?;")[2:])
-
-    
