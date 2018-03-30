@@ -250,11 +250,23 @@ class ZUP(object):
 
         return FoldbackStatus(int(self.send(":FLD?;")[2:]))
 
-    def set_ovp(self):
-        raise NotImplementedError()
+    def set_ovp(self, ovp) -> "ZUP":
+        """
+        Sets the over-voltage protection level in volts.
+        """
 
-    def get_ovp(self):
-        raise NotImplementedError()
+        if not 3 <= ovp <= 66:
+            raise ValueError("Over-Voltage level must be between 3V and 66V")
+
+        self.send(":OVP{0:4.1f};".format(ovp))
+        return self
+
+    def get_ovp(self) -> float:
+        """
+        Returns the present programmed over-voltage protection level.
+        """
+
+        return float(self.send(":OVP?;")[2:])
 
     def set_uvp(self):
         raise NotImplementedError()
