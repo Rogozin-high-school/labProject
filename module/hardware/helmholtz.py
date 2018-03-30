@@ -46,6 +46,59 @@ class FoldbackStatus(enum.Enum):
     ARMED = 1
     RELEASED = 0
 
+class AutoRestartMode(enum.Enum):
+    """
+    To represent an Auto-restart mode.
+    """
+    ON = 1
+    OFF = 0
+
+class StatusRegister(object):
+    def __init__(self, s):
+        self.s = s
+
+    def cc(self) -> bool:
+        """
+        Constant Current - returns True if the supply is in constant current mode.
+        """
+        return self.s[9] == "1"
+
+    def cv(self) -> bool:
+        """
+        Constant Voltage - returns True if the supply is in constant voltage mode.
+        """
+        return self.s[9] == "0"
+
+    def foldback(self) -> FoldbackStatus:
+        """
+        Returns the foldback protection status.
+        """
+        return FoldbackStatus(int(self.s[8]))
+
+    def autorestart(self) -> AutoRestartMode:
+        """
+        Returns the auto restart mode.
+        """
+        return AutoRestartMode(int(self.s[7]))
+
+    def output(self) -> OutputMode:
+        """
+        Returns the output mode.
+        """
+        return OutputMode(int(self.s[6]))
+
+    def srf(self):
+        raise NotImplementedError()
+
+    def srv(self):
+        raise NotImplementedError()
+    
+    def srt(self):
+        raise NotImplementedError()
+
+    def alarm(self):
+        raise NotImplementedError()
+
 class ZUP(object):
     """
     A class that handles the communication with a ZUP60 module.
@@ -286,11 +339,26 @@ class ZUP(object):
 
         return float(self.send(":UVP?;")[2:])
 
-    def set_ast(self):
-        raise NotImplementedError()
+    def set_ast(self, ast : AutoRestartMode) -> "ZUP":
+        """
+        Sets the auto restart mode to On or Off.
+        """
 
-    def get_ast(self):
-        raise NotImplementedError()
+        if isinstance(ast, AutoRestartMode):
+            ast = ast.value
+        else:
+            if ast not in (0, 1):
+                raise ValueError("Auto restart mode must be 0 or 1")
+
+        self.send(":AST{:d};".format(out)) 
+        return self
+
+    def get_ast(self) -> AutoRestartMode:
+        """
+        Returns the auto restart mode On/Off status.
+        """
+
+        return OutputMode(int(self.send(":AST?;")[2:]))
 
     def get_status(self):
         raise NotImplementedError()
