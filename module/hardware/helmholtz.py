@@ -203,3 +203,10 @@ class ZUP(object):
 
         self.send(":OUT{:d};".format(out)) 
         return True
+
+    def get_out(self) -> OutputMode:
+        """
+        Returns the output On/Off status.
+        """
+
+        return OutputMode(int(self.send(":OUT?;")[2:]))
