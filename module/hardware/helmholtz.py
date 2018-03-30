@@ -178,3 +178,12 @@ class ZUP(object):
         """
 
         return float(self.send(":CUR!;")[2:])
+
+    def get_amp(self):
+        """
+        Returns the actual output current.
+        """
+
+        return float(self.send(":CUR?;")[2:])
+
+    
