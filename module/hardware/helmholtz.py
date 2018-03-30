@@ -13,46 +13,80 @@ Remarks:
                              <-> Power Supply
 """
 
+import serial
+import time
+
 class ZUP(object):
     """
     A class that handles the communication with a ZUP60 module.
     It uses serial port for communication.
     """
 
-    def __init__(self, comport=None):
+    def __init__(self, comport : str = None):
         """ Initializes a new ZUP object with a COM port setting. """
         self.comport = comport
+        self.ser = None
 
     def __find_comport(self):
         """ Auto-finds an available COM port that responds to the ZUP ping command. """
         raise NotImplementedError\
             ("The __find_comport method of the class ZUP was not yet implemented.")
 
-    def connect(self):
+    def connect(self) -> bool:
         """ Connects to a ZUP device. """
-        raise NotImplementedError\
-            ("The connect method of the class ZUP was not yet implemented.")
+        if self.comport == None:
+            raise NotImplementedError("Automatically finding COM ports is not implemented")
+        
+        if self.ser:
+            raise Exception("ZUP object is already connected to port")
 
-			
-"""
-This is a test script I have created to communicate with the power supply.
-We can use it to create the communication port. 
-After the class creation is done, we may want to remove this code.
-"""
+        self.ser = serial.Serial(self.comport, 9600, 8, serial.PARITY_NONE, 1, 500, True, False, False, 500)
+        self.ser.close()
+        self.ser.open()
 
-import serial
-import threading
-import time
+        time.sleep(0.015)
+        
+        if not self.ser.isOpen():
+            raise Exception("Error opening connection to ZUP device on port " + self.comport)
 
-s = serial.Serial("COM13", 9600, 8, serial.PARITY_NONE, 1, 500, True, False, False, 500)
-s.close()
-s.open()
+        return True
 
-i = input()
-while i != "exit":
-    s.write(bytes(i, "ascii"))
-    time.sleep(0.015)
-    if (s.in_waiting):
-        print(s.readline())
-    i = input()
-s.close()
+    def disconnect(self) -> None:
+        """ Disconnects from the ZUP device """
+        if not self.ser or not self.ser.isOpen():
+            raise Exception("Not currently connected to ZUP device")
+
+        self.ser.close()
+        self.ser = None
+
+
+    def send(self, cmdtxt : str) -> str:
+        self.ser.write(bytes(cmdtxt, "ascii"))
+        time.sleep(0.015)
+        
+        if self.ser.in_waiting:
+            return self.ser.readline()
+    
+    def addr(self, a : int):
+        """
+        Sends an :ADDRn; command. 
+        a - number 1-31, symbols which ZUP device should comply with the next commands.
+        """
+
+        if not 0 < a < 32:
+            raise ValueError("Address must be between 1 and 31")
+
+        self.send(":ADDR{0:0>2};".format(a))
+        return True
+
+    def set_volt(self, volt : float):
+        """
+        Sets the Epsilon voltage of the device.
+        volt - the voltage, in volts.
+        """
+
+        if not 0 <= volt <= 60:
+            raise ValueError("Voltage must be between 0 and 60")
+
+        self.send(":VOL{:05.2f};".format(volt))
+        return True
