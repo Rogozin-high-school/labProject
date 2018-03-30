@@ -15,6 +15,14 @@ Remarks:
 
 import serial
 import time
+import enum
+
+class RemoteMode(enum.Enum):
+    """
+    To represent different remote modes
+    """
+    REMOTE = 1
+    LATCHED = 2
 
 class ZUP(object):
     """
@@ -65,7 +73,7 @@ class ZUP(object):
         time.sleep(0.015)
         
         if self.ser.in_waiting:
-            return self.ser.readline()
+            return str(self.ser.readline(), "ascii")[:-2]
     
     def addr(self, a : int):
         """
@@ -76,7 +84,7 @@ class ZUP(object):
         if not 0 < a < 32:
             raise ValueError("Address must be between 1 and 31")
 
-        self.send(":ADDR{0:0>2};".format(a))
+        self.send(":ADR{0:0>2};".format(a))
         return True
 
     def set_volt(self, volt : float):
@@ -90,3 +98,41 @@ class ZUP(object):
 
         self.send(":VOL{:05.2f};".format(volt))
         return True
+
+    def clear(self):
+        """
+        Clears the communication buffer and the following registers:
+            1. Operational status register
+            2. Alarm (fault status register)
+            3. Programming error register
+        """
+        self.send(":DCL;")
+        return True
+
+    def set_remote(self, rmt):
+        """
+        Sets the power supply to local or remote mode.
+        rmt - 0: Transition from remote to local mode
+            - 1: Transition from latched remote to non-latched remote
+            - 2: Latched remote: transition back to local mode or to non-latched remote.
+        """
+        if not 0 <= rmt < 3:
+            raise Exception("Remote mode shouldbe between 0 and 2")
+
+        self.send(":RMT{:d};".format(rmt))
+        return True
+
+    def get_remote(self):
+        """
+        Returns the remote/local setting.
+        """
+
+        rmt = int(self.send(":RMT?;")[2])
+        return RemoteMode(rmt)
+
+    def get_model(self):
+        """
+        Returns the power supply model identification as an ASCII string.
+        """
+
+        return self.send(":MDL?;")
