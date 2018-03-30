@@ -31,6 +31,14 @@ class OutputMode(enum.Enum):
     ON = 1
     OFF = 0
 
+class FoldbackAction(enum.Enum):
+    """
+    To represent an action on the Foldback Mode.
+    """
+    ARM = 1
+    RELEASE = 0
+    CANCEL = 2
+
 class ZUP(object):
     """
     A class that handles the communication with a ZUP60 module.
@@ -210,3 +218,17 @@ class ZUP(object):
         """
 
         return OutputMode(int(self.send(":OUT?;")[2:]))
+
+    def set_foldback(self, fld : FoldbackAction) -> bool:
+        """
+        Sets the foldback protection to On or Off. 
+        """
+
+        if isinstance(fld, FoldbackAction):
+            fld = fld.value
+        else:
+            if fld not in (0, 1, 2):
+                raise ValueError("Foldback action must be between 0 and 2")
+
+        self.send(":FLD{:d};".format(fld))
+        return True
