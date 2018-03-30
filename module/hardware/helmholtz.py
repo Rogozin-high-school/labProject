@@ -70,7 +70,7 @@ class ZUP(object):
 
     def send(self, cmdtxt : str) -> str:
         self.ser.write(bytes(cmdtxt, "ascii"))
-        time.sleep(0.015)
+        time.sleep(0.018)
         
         if self.ser.in_waiting:
             return str(self.ser.readline(), "ascii")[:-2]
@@ -89,7 +89,9 @@ class ZUP(object):
 
     def set_volt(self, volt : float):
         """
-        Sets the Epsilon voltage of the device.
+        Sets the output voltage value in volts. Thie programmed voltage is the actual output
+        at constant-voltage mode or the voltage limit at constant-current mode.
+
         volt - the voltage, in volts.
         """
 
@@ -144,4 +146,28 @@ class ZUP(object):
 
         return self.send(":REV?;")
 
-    
+    def get_p_volt(self):
+        """
+        Returns the present programmed output voltage value.
+        """
+
+        return float(self.send(":VOL!;")[2:])
+
+    def get_volt(self):
+        """
+        Returns the actual output voltage. The actual voltage range is the same as the programming range.
+        """
+
+        return float(self.send(":VOL?;")[2:])
+
+    def set_amp(self, amp):
+        """
+        Sets the output current in Amperes. This programmed currnet is the actual output voltage at
+        constant-current mode or the current limit in constnat-voltage mode. 
+        """
+
+        if not amp <= 0 <= 3.5:
+            raise ValueError("Current can only be between 0A and 3.5A")
+
+        self.send(":CUR{:05.3f};".format(amp))
+        return True
