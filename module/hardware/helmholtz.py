@@ -24,6 +24,13 @@ class RemoteMode(enum.Enum):
     REMOTE = 1
     LATCHED = 2
 
+class OutputMode(enum.Enum):
+    """
+    To represent the output modes (on/off)
+    """
+    ON = 1
+    OFF = 0
+
 class ZUP(object):
     """
     A class that handles the communication with a ZUP60 module.
@@ -185,3 +192,14 @@ class ZUP(object):
         """
 
         return float(self.send(":CUR?;")[2:])
+
+    def set_out(self, out : OutputMode) -> bool:
+        """
+        Sets the output to On or Off.
+        """
+
+        if isinstance(out, OutputMode):
+            out = out.value
+
+        self.send(":OUT{:d};".format(out)) 
+        return True
