@@ -171,3 +171,10 @@ class ZUP(object):
 
         self.send(":CUR{:05.3f};".format(amp))
         return True
+
+    def get_p_amp(self):
+        """
+        Returns the present programmed output current.
+        """
+
+        return float(self.send(":CUR!;")[2:])
