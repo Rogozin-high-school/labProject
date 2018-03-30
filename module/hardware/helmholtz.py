@@ -249,3 +249,35 @@ class ZUP(object):
         """
 
         return FoldbackStatus(int(self.send(":FLD?;")[2:]))
+
+    def set_ovp(self):
+        raise NotImplementedError()
+
+    def get_ovp(self):
+        raise NotImplementedError()
+
+    def set_uvp(self):
+        raise NotImplementedError()
+
+    def get_uvp(self):
+        raise NotImplementedError()
+
+    def set_ast(self):
+        raise NotImplementedError()
+
+    def get_ast(self):
+        raise NotImplementedError()
+
+    def get_status(self):
+        raise NotImplementedError()
+
+    def get_alarm(self):
+        raise NotImplementedError()
+
+    def get_program_error(self):
+        raise NotImplementedError()
+
+    def get_overall(self):
+        raise NotImplementedError()
+
+    
