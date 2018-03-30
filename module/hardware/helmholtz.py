@@ -268,11 +268,23 @@ class ZUP(object):
 
         return float(self.send(":OVP?;")[2:])
 
-    def set_uvp(self):
-        raise NotImplementedError()
+    def set_uvp(self, uvp) -> "ZUP":
+        """
+        Sets the under-voltage protection level in volts.
+        """
 
-    def get_uvp(self):
-        raise NotImplementedError()
+        if not 0 <= ovp <= 59.8:
+            raise ValueError("Under-Voltage level must be between 0V and 59.8V")
+
+        self.send(":UVP{0:4.1f};".format(ovp))
+        return self
+
+    def get_uvp(self) -> float:
+        """
+        Returns the present programmed under-voltage protection level.
+        """
+
+        return float(self.send(":UVP?;")[2:])
 
     def set_ast(self):
         raise NotImplementedError()
