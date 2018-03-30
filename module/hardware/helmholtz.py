@@ -208,6 +208,9 @@ class ZUP(object):
 
         if isinstance(out, OutputMode):
             out = out.value
+        else:
+            if out not in (0, 1):
+                raise ValueError("Output mode must be 0 or 1")
 
         self.send(":OUT{:d};".format(out)) 
         return True
