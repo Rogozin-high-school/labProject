@@ -97,7 +97,7 @@ class ZUP(object):
         if self.ser.in_waiting:
             return str(self.ser.readline(), "ascii")[:-2]
     
-    def addr(self, a : int) -> ZUP:
+    def addr(self, a : int) -> "ZUP":
         """
         Sends an :ADDRn; command. 
         a - number 1-31, symbols which ZUP device should comply with the next commands.
@@ -109,7 +109,7 @@ class ZUP(object):
         self.send(":ADR{0:0>2};".format(a))
         return self
 
-    def set_volt(self, volt : float) -> ZUP:
+    def set_volt(self, volt : float) -> "ZUP":
         """
         Sets the output voltage value in volts. Thie programmed voltage is the actual output
         at constant-voltage mode or the voltage limit at constant-current mode.
@@ -123,7 +123,7 @@ class ZUP(object):
         self.send(":VOL{:05.2f};".format(volt))
         return self
 
-    def clear(self) -> ZUP:
+    def clear(self) -> "ZUP":
         """
         Clears the communication buffer and the following registers:
             1. Operational status register
@@ -133,7 +133,7 @@ class ZUP(object):
         self.send(":DCL;")
         return self
 
-    def set_remote(self, rmt : int) -> ZUP:
+    def set_remote(self, rmt : int) -> "ZUP":
         """
         Sets the power supply to local or remote mode.
         rmt - 0: Transition from remote to local mode
@@ -182,7 +182,7 @@ class ZUP(object):
 
         return float(self.send(":VOL?;")[2:])
 
-    def set_amp(self, amp : float) -> ZUP:
+    def set_amp(self, amp : float) -> "ZUP":
         """
         Sets the output current in Amperes. This programmed currnet is the actual output voltage at
         constant-current mode or the current limit in constnat-voltage mode. 
@@ -208,7 +208,7 @@ class ZUP(object):
 
         return float(self.send(":CUR?;")[2:])
 
-    def set_out(self, out : OutputMode) -> ZUP:
+    def set_out(self, out : OutputMode) -> "ZUP":
         """
         Sets the output to On or Off.
         """
@@ -229,7 +229,7 @@ class ZUP(object):
 
         return OutputMode(int(self.send(":OUT?;")[2:]))
 
-    def set_foldback(self, fld : FoldbackAction) -> ZUP:
+    def set_foldback(self, fld : FoldbackAction) -> "ZUP":
         """
         Sets the foldback protection to On or Off. 
         """
