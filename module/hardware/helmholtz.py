@@ -98,6 +98,30 @@ class StatusRegister(object):
 
     def alarm(self):
         raise NotImplementedError()
+    
+class ProgramError(object):
+    def __init__(self, s):
+        self.WRONG_COMMAND = s[3] == "1"
+        self.BUFFER_OVERFLOW = s[4] == "1"
+        self.WRONG_VOLTAGE = s[5] == "1"
+        self.WRONG_CURRENT = s[6] == "1"
+        self.NO_ERROR = "1" not in s
+
+    def errs(self):
+        e = []
+        if (self.WRONG_COMMAND):
+            e.append("WRONG_COMMAND")
+        if (self.BUFFER_OVERFLOW):
+            e.append("BUFFER_OVERFLOW")
+        if (self.WRONG_VOLTAGE):
+            e.append("WRONG_VOLTAGE")
+        if (self.WRONG_CURRENT):
+            e.append("WRONG_CURRENT")
+        return ", ".join(e)
+
+    def __repr__(self):
+        return "<ProgramError: " + ("NO_ERROR" if self.NO_ERROR else self.errs()) + ">"
+
 
 class ZUP(object):
     """
@@ -371,7 +395,7 @@ class ZUP(object):
         raise NotImplementedError()
 
     def get_program_error(self):
-        raise NotImplementedError()
+        return ProgramError(self.send(":STP?;"))
 
     def get_overall(self):
         raise NotImplementedError()
