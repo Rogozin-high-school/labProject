@@ -39,6 +39,13 @@ class FoldbackAction(enum.Enum):
     RELEASE = 0
     CANCEL = 2
 
+class FoldbackStatus(enum.Enum):
+    """
+    Represents a foldback status
+    """
+    ARMED = 1
+    RELEASED = 0
+
 class ZUP(object):
     """
     A class that handles the communication with a ZUP60 module.
@@ -235,3 +242,10 @@ class ZUP(object):
 
         self.send(":FLD{:d};".format(fld))
         return True
+
+    def get_foldback(self) -> FoldbackStatus:
+        """
+        Returns the foldback protection status.
+        """
+
+        return FoldbackStatus(int(self.send(":FLD?;")[2:]))
