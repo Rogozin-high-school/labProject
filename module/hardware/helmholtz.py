@@ -136,3 +136,12 @@ class ZUP(object):
         """
 
         return self.send(":MDL?;")
+
+    def get_software(self):
+        """
+        Returns the software version as an ASCII string
+        """
+
+        return self.send(":REV?;")
+
+    
