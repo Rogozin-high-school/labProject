@@ -59,8 +59,39 @@ class ApplicationBase(ABC):
         pass
 
     @abstractmethod
+    def __help__(self, command):
+        """
+        Should return a help-string for the specified command. 
+        If the command parameter is None, means you have to return a general help-string for the application.
+        """
+
+    @abstractmethod
     def __clean__(self):
         """
         To deallocate, clear APIs and memory and clean everything when the application is finished.
         """
         pass
+
+def load(app : ApplicationBase):
+    """
+    Loads an application.
+    """
+    pass
+
+def start(app : str):
+    """
+    Starts an already-loaded application.
+    """
+    pass
+
+def close(app : str):
+    """
+    Closes a started application.
+    """
+    pass
+
+def get_help(app : str, cmd : str):
+    """
+    Returns a help-string for a specific application and command.
+    """
+    pass
