@@ -5,12 +5,14 @@ import itertools
 cv2.namedWindow("img")
 cap = cv2.VideoCapture(1)
 M = None
+
+history = []
+
 while True:
     result, frame = cap.read()
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     cv2.circle(frame, (frame.shape[1] // 2, frame.shape[0] // 2), 5, (0, 0, 255), -1)
-    print((frame.shape[0] // 2, frame.shape[1] // 2))
 
     lower = np.array([0, 90, 50])
     upper = np.array([10, 255, 255])
@@ -37,6 +39,28 @@ while True:
         cv2.circle(frame, (cx, cy), 5, (255, 0, 255), 5, -1)
         cv2.line(frame, (cx, cy), (frame.shape[1] // 2, frame.shape[0] // 2), (0, 255, 255), 5)
 
+        vx = frame.shape[1] // 2 - cx
+        vy = cy - frame.shape[0] // 2
+
+        ang = np.degrees(np.arctan2(vy, vx))
+        history.append(ang)
+        if len(history) > 5:
+            del history[0]
+        if max(history) - min(history) > 20:
+            history = [ang]
+
+        nang = sum(history) / len(history)
+        print(nang)
+
+        py = 100 * np.sin(np.radians(nang))
+        px = 100 * np.cos(np.radians(nang))
+
+        pointer = np.array([px, -py])
+        pointer = pointer / np.linalg.norm(pointer)
+        pointer = pointer * 50
+
+        cv2.line(frame, (frame.shape[1] // 2, frame.shape[0] // 2), (frame.shape[1] // 2 + int(pointer[0]), frame.shape[0] // 2 + int(pointer[1])), (255, 100, 0), 5)
+        cv2.putText(frame, "North: " + str(round(nang * 1000) / 1000) + "deg", (0, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0), 2)
     cv2.imshow("img", frame)
     if (cv2.waitKey(1) == 27):
         M = c
