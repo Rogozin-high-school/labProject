@@ -42,7 +42,7 @@ def get_center_point(img):
         m = cv2.moments(c)
         x = int(m["m10"] / m["m00"])
         y = int(m["m01"] / m["m00"])
-        cv2.circle(img, (x, y), 15, (255, 255, 0), -1)
+        cv2.circle(img, (x, y), 7, (255, 255, 0), -1)
         _ctrc += 1
         return x, y
 
@@ -61,7 +61,7 @@ def get_compass_contour(img):
 
 
 
-cv2.namedWindow("img")
+cv2.namedWindow("Compass View")
 cap = cv2.VideoCapture(1)
 M = None
 
@@ -74,7 +74,7 @@ while True:
     if f1 + f0 == 0:
         continue
 
-    cv2.circle(frame, (f1, f0), 5, (255, 0, 0), -1)
+    # cv2.circle(frame, (f1, f0), 5, (255, 0, 0), -1)
 
     c = get_compass_contour(frame)
     d = get_center_contour(frame)
@@ -104,16 +104,16 @@ while True:
 
         nang = sum(history) / len(history)
 
-        py = 100 * np.sin(np.radians(nang))
-        px = 100 * np.cos(np.radians(nang))
+        py = np.sin(np.radians(nang))
+        px = np.cos(np.radians(nang))
 
         pointer = np.array([px, -py])
         pointer = pointer / np.linalg.norm(pointer)
-        pointer = pointer * 50
+        pointer = pointer * 75
 
         cv2.line(frame, (f1, f0), (f1 + int(pointer[0]), f0 + int(pointer[1])), (255, 100, 0), 5)
         cv2.putText(frame, "North: " + str(round(nang * 1000) / 1000) + "deg", (0, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0), 2)
-    cv2.imshow("img", frame)
+    cv2.imshow("Compass View", frame)
     if (cv2.waitKey(1) == 27):
         M = c
         break
