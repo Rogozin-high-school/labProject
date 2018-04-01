@@ -72,26 +72,60 @@ class ApplicationBase(ABC):
         """
         pass
 
+"""
+To store all the loaded apps. Keys - strings, Values - ApplicationBase subclasses.
+"""
+_apps = {}
+
 def load(app : ApplicationBase):
     """
     Loads an application.
     """
-    pass
+    global _apps
+
+    app.loaded = False
+    _apps[type(app).__name__] = app
 
 def start(app : str):
     """
     Starts an already-loaded application.
     """
-    pass
+    global _apps
+
+    if app not in _apps.keys():
+        return False, "App not found"
+    
+    if hasattr(_apps[app], "loaded") and _apps[app].loaded:
+        return False, "App already loaded"
+    
+    _apps[app].__startup__()
+    _apps[app].loaded = True
+    return True, None
+    
 
 def close(app : str):
     """
     Closes a started application.
     """
-    pass
+    global _apps
+
+    if app not in _apps.keys():
+        return False, "App not found"
+    
+    if hasattr(_apps[app], "loaded") and not _apps[app].loaded:
+        return False, "App is not loaded"
+    
+    _apps[app].__clean__()
+    _apps[app].loaded = False
+    return True, None
 
 def get_help(app : str, cmd : str):
     """
     Returns a help-string for a specific application and command.
     """
-    pass
+    global _apps
+
+    if app not in _apps.keys():
+        return False, "App not found"
+
+    return _apps[app].__help__(cmd)
