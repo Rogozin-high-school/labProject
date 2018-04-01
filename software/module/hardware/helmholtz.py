@@ -16,6 +16,7 @@ Remarks:
 import serial
 import time
 import enum
+import serial.tools.list_ports
 
 class RemoteMode(enum.Enum):
     """
@@ -131,13 +132,22 @@ class ZUP(object):
 
     def __init__(self, comport : str = None):
         """ Initializes a new ZUP object with a COM port setting. """
-        self.comport = comport
+        if comport == None:
+            self.find_comport()
+        else:
+            self.comport = comport
         self.ser = None
 
     def __find_comport(self):
         """ Auto-finds an available COM port that responds to the ZUP ping command. """
-        raise NotImplementedError\
-            ("The __find_comport method of the class ZUP was not yet implemented.")
+        comlist = serial.tools.list_ports.comports();
+        for com in comlist:
+            if com.description.find("ATEN USB to Serial Bridge") !=-1:
+                self.comport = com.device
+                return
+        raise Exception("ZUP comport could not found")
+        #raise NotImplementedError\
+         #   ("The __find_comport method of the class ZUP was not yet implemented.")
 
     def connect(self) -> bool:
         """ Connects to a ZUP device. """
