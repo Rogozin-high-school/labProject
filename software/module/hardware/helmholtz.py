@@ -374,7 +374,7 @@ class ZUP(object):
             if ast not in (0, 1):
                 raise ValueError("Auto restart mode must be 0 or 1")
 
-        self.send(":AST{:d};".format(out)) 
+        self.send(":AST{:d};".format(ast)) 
         return self
 
     def get_ast(self) -> AutoRestartMode:
@@ -382,7 +382,7 @@ class ZUP(object):
         Returns the auto restart mode On/Off status.
         """
 
-        return OutputMode(int(self.send(":AST?;")[2:]))
+        return AutoRestartMode(int(self.send(":AST?;")[2:]))
 
     def get_status(self) -> StatusRegister:
         """
