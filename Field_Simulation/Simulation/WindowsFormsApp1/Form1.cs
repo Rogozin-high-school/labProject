@@ -18,6 +18,7 @@ namespace WindowsFormsApp1
         int vertical = 0;
         const int CIRCLE_TIME = 1 * 60 ;
         const int FIELD_SIZE = 50;
+        const int CIRCLE_RADIUS = 100;
         Bitmap bitmap;
         DateTime time;
         public Form1()
@@ -52,16 +53,16 @@ namespace WindowsFormsApp1
                         arr[1] = -arr[1];
                         Point vector = new Point(arr);
                         int[] zero = { bitmap.Width / 2, bitmap.Height / 2 };
-                        int[] circ = { (int)(Math.Sin(angle) * 100)+bitmap.Width/2, -(int)(Math.Cos(angle) * 100)+bitmap.Height/2};
+                        int[] circ = { (int)(Math.Sin(angle) * CIRCLE_RADIUS)+bitmap.Width/2, -(int)(Math.Cos(angle) * CIRCLE_RADIUS)+bitmap.Height/2};
                         
                         //Printing the vertical vector to the circle
-                        Invoke((MethodInvoker)delegate () { Line(circ,(vector+new Point(circ)).coordinates, 2,Color.Blue); });
+                        Invoke((MethodInvoker)delegate () { Line(circ,(vector+new Point(circ)).coordinates, 1,Color.Blue); });
                         Invoke((MethodInvoker)delegate () { pictureBox1.Image = this.bitmap; });
 
                         //Printing the circle
                         
                         Invoke((MethodInvoker)delegate () { draw_rect(circ, 2, Color.Black); });
-                        Thread.Sleep(100);
+                        Thread.Sleep(10);
                         }
                     }
                     catch(Exception exception) {
@@ -75,7 +76,7 @@ namespace WindowsFormsApp1
         {
             DateTime time = DateTime.Now;
             TimeSpan t = time - this.time;
-            return (t.TotalSeconds%CIRCLE_TIME) / CIRCLE_TIME;
+            return (t.TotalSeconds % CIRCLE_TIME) / CIRCLE_TIME;
 
         }
         /// <summary>
@@ -113,7 +114,7 @@ namespace WindowsFormsApp1
         /// </summary>
         /// <param name="angle"></param>
         /// <returns></returns>
-        public int[] DePolarField(double angle)
+        public int[] DePolarField(float angle)
         {
             //TODO : fix function to work
             return circular_field(angle * 2);
@@ -122,13 +123,19 @@ namespace WindowsFormsApp1
         {
             return degrees*Math.PI/180;
         }
+        
         //cleans all points from the clean list
         public void Clean()
         {
             cleanM.WaitOne();
             foreach(int[] pos in toClean)
             {
-                bitmap.SetPixel(pos[0], pos[1], Color.White);
+                int[] loc = { pos[0] - bitmap.Width / 2, pos[1] - bitmap.Height / 2 };
+                float len = new Point(loc).LenFromStart();
+                if (len < 0.95 * CIRCLE_RADIUS || len> 1.02 * CIRCLE_RADIUS)
+                {
+                    bitmap.SetPixel(pos[0], pos[1], Color.White);
+                }
             }
             cleanM.ReleaseMutex();
         }

@@ -20,5 +20,15 @@ namespace WindowsFormsApp1
             int[] arr = { first.coordinates[0] + second.coordinates[0], first.coordinates[1] + second.coordinates[1] };
             return new Point(arr);
         }
+        public float Distance(Point other)
+        {
+            float x2 = (float)Math.Pow(this.coordinates[0] - other.coordinates[0], 2.0);
+            float y2 = (float)Math.Pow(this.coordinates[1] - other.coordinates[1], 2.0);
+            return (float)Math.Sqrt(x2 + y2);
+        }
+        public float LenFromStart()
+        {
+            return (float)Math.Sqrt(Math.Pow(this.coordinates[0], 2.0) + Math.Pow(this.coordinates[1], 2.0));
+        }
     }
 }

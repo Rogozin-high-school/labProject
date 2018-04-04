@@ -18,3 +18,13 @@ K:\Kdocuments\satellite\simulation\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\W
 K:\Kdocuments\satellite\simulation\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.CoreCompileInputs.cache
 K:\Kdocuments\satellite\simulation\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.exe
 K:\Kdocuments\satellite\simulation\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.pdb
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csprojResolveAssemblyReference.cache
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Form1.resources
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.Properties.Resources.resources
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.GenerateResource.Cache
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.csproj.CoreCompileInputs.cache
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.exe
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\obj\Debug\WindowsFormsApp1.pdb
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.exe.config
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.exe
+K:\Kdocuments\satellite\laboratory\Field_Simulation\Simulation\WindowsFormsApp1\bin\Debug\WindowsFormsApp1.pdb
