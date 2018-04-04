@@ -142,13 +142,13 @@ def cmd(cmd):
         return "App not loaded"
 
     if len(cmd) < 2:
-        return "No command specified"
+        cmd.append("")
 
     if cmd[1] not in _apps[cmd[0]].__commands__():
         return "Unregistered command"
 
     try:
-        _apps["start"].__commands__()["app"](cmd)
+        _apps[cmd[0]].__commands__()[cmd[1]](cmd)
     except Exception as ex:
         print(traceback.format_exc())
         print(ex)
