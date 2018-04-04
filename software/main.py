@@ -4,6 +4,8 @@ from module.apps.application import *
 import shlex
 
 import example_app
+import util_apps
+
 
 def take_cmd():
     c = input(">>>")
