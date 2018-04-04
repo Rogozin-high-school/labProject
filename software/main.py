@@ -3,8 +3,6 @@ import shlex
 
 import example_app
 
-start("example_app")
-
 def take_cmd():
     cmd = input(">>>")
     return list(shlex.shlex(cmd))

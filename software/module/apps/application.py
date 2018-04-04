@@ -148,7 +148,7 @@ def cmd(cmd):
         return "Unregistered command"
 
     try:
-        _apps[cmd[0]].__commands__()[cmd[1]](cmd)
+        _apps["start"].__commands__()["app"](cmd)
     except Exception as ex:
         print(traceback.format_exc())
         print(ex)

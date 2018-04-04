@@ -1,5 +1,7 @@
 from module.apps.application import ApplicationBase, load
 
+import util_apps
+
 class example_app(ApplicationBase):
     def __startup__(self):
         print("ExampleApp has been started up! I'm so cool jezuz")
