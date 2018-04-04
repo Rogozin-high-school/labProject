@@ -4,6 +4,7 @@ Author: Yotam Salmon
 """
 
 from abc import ABC, abstractmethod
+import traceback
 
 class ApplicationBase(ABC):
     """
@@ -129,3 +130,26 @@ def get_help(app : str, cmd : str):
         return False, "App not found"
 
     return _apps[app].__help__(cmd)
+
+def cmd(cmd):
+    if len(cmd) < 1:
+        return "No application specified"
+
+    if cmd[0] not in _apps.keys():
+        return "App not found"
+
+    if not _apps[cmd[0]].loaded:
+        return "App not loaded"
+
+    if len(cmd) < 2:
+        return "No command specified"
+
+    if cmd[1] not in _apps[cmd[0]].__commands__():
+        return "Unregistered command"
+
+    try:
+        _apps[cmd[0]].__commands__()[cmd[1]](cmd)
+    except Exception as ex:
+        print(traceback.format_exc())
+        print(ex)
+    return None

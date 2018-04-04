@@ -1,9 +1,17 @@
-from module.server.httpserver import handler, run
+from module.apps.application import *
+import shlex
 
-@handler("helloworld", "GET")
-def a(req):
-    return 200, {}, "Hello, World!"
+import example_app
 
-t, h = run(('', 8080))
-input()
-h.shutdown()
+start("example_app")
+
+def take_cmd():
+    cmd = input(">>>")
+    return list(shlex.shlex(cmd))
+
+inp = take_cmd()
+while not "".join(inp) == "exit":
+    err = cmd(inp)
+    if err is not None:
+        print(err)
+    inp = take_cmd()

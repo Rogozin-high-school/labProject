@@ -1,11 +1,11 @@
-from module.apps.application import ApplicationBase
+from module.apps.application import ApplicationBase, load
 
 class example_app(ApplicationBase):
     def __startup__(self):
         print("ExampleApp has been started up! I'm so cool jezuz")
         self.i = 42
 
-    def __be_cool__(self):
+    def __be_cool__(self, cmd):
         print("This command is kinda awesome" + str(self.i))
 
     def __commands__(self):
@@ -31,3 +31,4 @@ class example_app(ApplicationBase):
     def __clean__(self):
         print("'I'm outta here'\r\n    - ExampleApp, 2018")
 
+load(example_app())
