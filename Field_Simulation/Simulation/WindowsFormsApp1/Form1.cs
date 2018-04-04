@@ -123,6 +123,20 @@ namespace WindowsFormsApp1
         {
             return degrees*Math.PI/180;
         }
+        //prints a given vector on the correct place on the circle
+        public void Print_Vector(int[] vector,Color c)
+        {
+            vector[0] *= FIELD_SIZE;
+            vector[1] *= FIELD_SIZE;
+
+            double angle = 360 * get_ratio();
+            angle = degrees_to_radians(angle);
+            int[] circ = { (int)(Math.Sin(angle) * CIRCLE_RADIUS) + bitmap.Width / 2, -(int)(Math.Cos(angle) * CIRCLE_RADIUS) + bitmap.Height / 2 };
+
+            int[] zero = { bitmap.Width / 2, bitmap.Height / 2 };
+
+            Invoke((MethodInvoker)delegate () { Line(circ, (new Point(vector) + new Point(circ)).coordinates, 2, c); });
+        }
         
         //cleans all points from the clean list
         public void Clean()
