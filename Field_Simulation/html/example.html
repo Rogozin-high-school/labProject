@@ -1,0 +1,92 @@
+<html>
+<head></head>
+<body>
+	<canvas id='bitmap' width ='400' height = '400'></canvas>
+	<script>
+		var time;
+		var CIRCLE_TIME = 1 * 60 * 200;
+		var CIRCLE_RADIUS = 30;
+		var FIELD_SIZE = 30;
+		var mutex = false;
+		start();
+		//setInterval(loop,0.1);
+		//setTimeout(clear_lines,0.1);
+		function start()
+		{
+			time = new Date().getTime();
+		}
+		function loop(context)
+		{
+			var element = document.getElementById("bitmap");
+			var bitmap = element.getContext("2d");
+			var angle = 360 * get_ratio();
+			angle = radians(angle);
+			var circle = [Math.sin(angle)*CIRCLE_RADIUS,Math.cos(angle)*CIRCLE_RADIUS];
+			var zero = [200,200];
+			var vector = circular_field(angle);
+
+			circle[0] += zero[0]
+			circle[1] = (circle[1]+zero[1]);
+			vector[0] += circle[0];
+			vector[1] = (vector[1]+circle[1]);
+			
+			while(mutex);
+			mutex = true;
+			bitmap.strokeStyle = "000000";
+			bitmap.moveTo(circle[0], circle[1]);
+			bitmap.lineTo(vector[0], vector[1]);
+			bitmap.stroke();
+			mutex = false;
+		}
+		function clear_lines()
+		{
+			while(mutex);
+			mutex = true;
+			var context = document.getElementById("bitmap").getContext("2d");
+			/*context.moveTo(start[0] ,start[1]);
+			context.strokeStyle = "FFFFFF";
+			context.lineTo(end[0] ,end[1]);
+			context.stroke();*/
+			context.fillStyle = "white";
+			context.fillRect(0,0,400,400);
+			conseole.log("cleaned");
+			mutex = false;
+		}
+		function circular_field(angle)
+		{
+			var a = Math.sin(angle);
+			var b = Math.cos(angle);
+			//console.log(angle);
+			var x = 0, y = 0;
+			if(b!=0)
+			{
+				var sign = b / Math.abs(b);
+				x = 1 * sign;
+				y = -a / b *sign;
+				var length = Math.sqrt(x*x + y*y);
+				x /= length;
+				y /= length;
+				x *= FIELD_SIZE;
+				y *= FIELD_SIZE;
+			}
+			else
+			{
+				x = 0;
+				y = -a * FIELD_SIZE;
+			}
+			var arr = [Math.round(x),Math.round(y)];
+			return arr;
+		}
+		function radians(angle)
+		{
+			return angle * (Math.PI/180)
+		}
+		function get_ratio()
+		{
+			var t = new Date().getTime();
+			var span = ((t - time)%CIRCLE_TIME)/CIRCLE_TIME;
+			return span; 
+		}
+	</script>
+</body>
+</html>
