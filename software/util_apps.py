@@ -9,7 +9,9 @@ class start(application.ApplicationBase):
         pass
 
     def __app__(self, cmd):
-        application.start(cmd[2])
+        success, status = application.start(cmd[2])
+        if not success:
+            print("Error: " + status)
 
     def __commands__(self):
         return {
