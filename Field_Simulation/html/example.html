@@ -62,7 +62,7 @@
 			{
 				var sign = b / Math.abs(b);
 				x = 1 * sign;
-				y = -a / b *sign;
+				y = -a / b * sign;
 				var length = Math.sqrt(x*x + y*y);
 				x /= length;
 				y /= length;
@@ -74,17 +74,17 @@
 				x = 0;
 				y = -a * FIELD_SIZE;
 			}
-			var arr = [Math.round(x),Math.round(y)];
+			var arr = [Math.round(x) ,Math.round(y)];
 			return arr;
 		}
 		function radians(angle)
 		{
-			return angle * (Math.PI/180)
+			return angle * (Math.PI / 180)
 		}
 		function get_ratio()
 		{
 			var t = new Date().getTime();
-			var span = ((t - time)%CIRCLE_TIME)/CIRCLE_TIME;
+			var span = ((t - time) % CIRCLE_TIME) / CIRCLE_TIME;
 			return span; 
 		}
 	</script>
