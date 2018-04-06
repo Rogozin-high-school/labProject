@@ -13,11 +13,11 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
+        const int CIRCLE_TIME = 1 * 60;
+        const int FIELD_SIZE = 50;
         Mutex cleanM = new Mutex();
         List<int[]> toClean = new List<int[]>();
         int vertical = 0;
-        const int CIRCLE_TIME = 1 * 60 ;
-        const int FIELD_SIZE = 50;
         Bitmap bitmap;
         DateTime time;
         public Form1()
