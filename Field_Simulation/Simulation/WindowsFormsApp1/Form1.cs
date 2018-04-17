@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
+using System.IO;
 
 namespace WindowsFormsApp1
 {
@@ -15,9 +16,9 @@ namespace WindowsFormsApp1
     {
         const int CIRCLE_TIME = 1 * 60;
         const int FIELD_SIZE = 50;
+        const int CIRCLE_RADIUS = 100;
         Mutex cleanM = new Mutex();
         List<int[]> toClean = new List<int[]>();
-        int vertical = 0;
         Bitmap bitmap;
         DateTime time;
         public Form1()
@@ -27,6 +28,9 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            timer1.Enabled = false;
+            timer1.Interval = 1000;
+
             time = DateTime.Now;
             this.bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = this.bitmap;
@@ -41,41 +45,47 @@ namespace WindowsFormsApp1
             {
                 try
                 {
+                    int iter = 0;
                     while (true)
                     {
-                        //removes older vectors
-                        //Clean();
-                        double angle = 360 * get_ratio();
-                        angle = degrees_to_radians(angle);
-                        int[] arr = circular_field(angle);
-                        Invoke((MethodInvoker)delegate () { label1.Text = arr[0] + ":" + arr[1]; });
+                        iter++;
+
+                        double angle = 360 * GetRatio();
+                        angle = DegreesToRadians(angle);
+                        int[] arr = CircularField(angle);
+                        Invoke((MethodInvoker)delegate () { label1.Text = arr[0] + ":" + arr[1] + " >" + iter; });
                         arr[1] = -arr[1];
                         Point vector = new Point(arr);
                         int[] zero = { bitmap.Width / 2, bitmap.Height / 2 };
-                        int[] circ = { (int)(Math.Sin(angle) * 100)+bitmap.Width/2, -(int)(Math.Cos(angle) * 100)+bitmap.Height/2};
+                        int[] circ = { (int)(Math.Sin(angle) * CIRCLE_RADIUS)+bitmap.Width/2, -(int)(Math.Cos(angle) * CIRCLE_RADIUS)+bitmap.Height/2};
                         
                         //Printing the vertical vector to the circle
-                        Invoke((MethodInvoker)delegate () { Line(circ,(vector+new Point(circ)).coordinates, 1,Color.Blue); });
+                        Invoke((MethodInvoker)delegate () { Line(circ, (vector+new Point(circ)).coordinates, 1,Color.Blue); });
                         Invoke((MethodInvoker)delegate () { pictureBox1.Image = this.bitmap; });
 
-                        //Printing the circle
-                        
-                        Invoke((MethodInvoker)delegate () { draw_rect(circ, 2, Color.Black); });
-                        Thread.Sleep(100);
-                        }
+                        // Printing the circle
+                        //Invoke((MethodInvoker)delegate () { draw_rect(circ, 2, Color.Black); });
+                        Invoke((MethodInvoker)delegate () { pictureBox1.Image.Save("image.png"); });
+                        Thread.Sleep(10);
+
+                        // Clearing previous vectors
+                        Invoke((MethodInvoker)delegate () { Clean(circ, (vector + new Point(circ)).coordinates); });
                     }
-                    catch(Exception exception) {
-                        MessageBox.Show(exception.Message);
-                    }
+                }
+                catch(Exception exception) {
+                    MessageBox.Show(exception.Message);
+                    this.Close();
+                }
             });
             t.Start();
+            
         }
         
-        public double get_ratio()
+        public double GetRatio()
         {
             DateTime time = DateTime.Now;
             TimeSpan t = time - this.time;
-            return (t.TotalSeconds%CIRCLE_TIME) / CIRCLE_TIME;
+            return (t.TotalSeconds % CIRCLE_TIME) / CIRCLE_TIME;
 
         }
         /// <summary>
@@ -83,7 +93,7 @@ namespace WindowsFormsApp1
         /// </summary>
         /// <param name="angle">The angle of the object relative to the path(degrees)</param>
         /// <returns>integer array that represents the vector of the field for the specified angle</returns>
-        public int[] circular_field(double angle)
+        public int[] CircularField(double angle)
         {
             double a = Math.Sin(angle);
             double b = Math.Cos(angle);
@@ -116,21 +126,32 @@ namespace WindowsFormsApp1
         public int[] DePolarField(double angle)
         {
             //TODO : fix function to work
-            return circular_field(angle * 2);
+            return CircularField(angle * 2);
         }
-        public double degrees_to_radians(double degrees)
+        public double DegreesToRadians(double degrees)
         {
-            return degrees*Math.PI/180;
+            return degrees * Math.PI / 180;
         }
         //cleans all points from the clean list
         public void Clean()
         {
-            cleanM.WaitOne();
-            foreach(int[] pos in toClean)
+            //cleanM.WaitOne();
+            /*foreach(int[] pos in toClean)
             {
-                bitmap.SetPixel(pos[0], pos[1], Color.White);
+                Invoke((MethodInvoker)delegate () { bitmap.SetPixel(pos[0], pos[1], Color.White); });
+            }*/
+            for(int i=0;i<this.bitmap.Width;i++)
+            {
+                for(int j=0;j<this.bitmap.Height;j++)
+                {
+                    this.bitmap.SetPixel(i, j, Color.White);
+                }
             }
-            cleanM.ReleaseMutex();
+            //cleanM.ReleaseMutex();
+        }
+        public void Clean(int[] start,int[] end)
+        {
+            Line(start, end, 1, Color.White);
         }
         public void draw_circle(int thickness)
         {
@@ -142,12 +163,13 @@ namespace WindowsFormsApp1
             {
                 for(int j=location[1]-size;j<location[1]+size;j++)
                 {
-                    this.bitmap.SetPixel(i, j,c);
-                    if(!clean)
+                    if(bitmap.GetPixel(i,j).Name != "Black")
+                        this.bitmap.SetPixel(i, j,c);
+                    if(clean)
                     {
                         int[] pos = { i, j };
                         cleanM.WaitOne();
-                        toClean.Add(pos);
+                        //toClean.Add(pos);
                         cleanM.ReleaseMutex();
                     }
 
@@ -184,6 +206,11 @@ namespace WindowsFormsApp1
                     draw_rect(location, 2, c, true);
                 }
             }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            Clean();
         }
     }
 }

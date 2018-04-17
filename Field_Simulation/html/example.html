@@ -5,37 +5,49 @@
 	<script>
 		var time;
 		var CIRCLE_TIME = 1 * 60 * 200;
-		var CIRCLE_RADIUS = 30;
-		var FIELD_SIZE = 30;
+		var CIRCLE_RADIUS = 50;
+		var FIELD_SIZE = 75;
 		var mutex = false;
+		var bitmap = document.getElementById("bitmap").getContext("2d");
 		start();
-		setInterval(loop,0.1);
+		setInterval(loop,300);
+		//setInterval(function(){test_clear(bitmap);},300);
 		function start()
 		{
 			time = new Date().getTime();
 		}
-		function loop(context)
+		function loop()
 		{
 			var element = document.getElementById("bitmap");
 			var bitmap = element.getContext("2d");
+
+			// Clear previous vectors
+			bitmap.clearRect(0,0,400,400);
+			console.log(element.width,element.height);
+
+			// Gets the circular field vector
 			var angle = 360 * get_ratio();
 			angle = radians(angle);
 			var circle = [Math.sin(angle)*CIRCLE_RADIUS,Math.cos(angle)*CIRCLE_RADIUS];
 			var zero = [200,200];
 			var vector = circular_field(angle);
 
+			// Makes adjustments between vectors and canvas points
 			circle[0] += zero[0]
 			circle[1] = (circle[1]+zero[1]);
 			vector[0] += circle[0];
 			vector[1] = (vector[1]+circle[1]);
-			
-			while(mutex);
-			mutex = true;
+			// Draws the vector
+			bitmap.beginPath();
 			bitmap.strokeStyle = "000000";
 			bitmap.moveTo(circle[0], circle[1]);
 			bitmap.lineTo(vector[0], vector[1]);
 			bitmap.stroke();
-			mutex = false;
+			// Draws the circle
+			bitmap.beginPath();
+			bitmap.arc(zero[0], zero[1], CIRCLE_RADIUS, 0, 2 * Math.PI);
+			bitmap.stroke();
+		
 		}
 		function clear_lines()
 		{
