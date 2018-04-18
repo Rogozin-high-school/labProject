@@ -25,19 +25,18 @@
 			var bitmap = element.getContext("2d");
 
 			// Clear previous vectors
-			bitmap.clearRect(0,0,element.width,element.height);
-			console.log(element.width,element.height);
+			bitmap.clearRect(0, 0, element.width, element.height);
 
 			// Gets the circular field vector
 			var angle = 360 * get_ratio();
 			angle = radians(angle);
-			var circle = [Math.sin(angle)*CIRCLE_RADIUS,Math.cos(angle)*CIRCLE_RADIUS];
+			var circle = [Math.sin(angle) * CIRCLE_RADIUS, Math.cos(angle) * CIRCLE_RADIUS];
 			var zero = [element.width / 2, element.height / 2];
 			var vector = circular_field(angle);
 
 			// Makes adjustments between vectors and canvas points
 			circle[0] += zero[0]
-			circle[1] = (circle[1]+zero[1]);
+			circle[1] = (circle[1] + zero[1]);
 			vector[0] += circle[0];
 			vector[1] = (vector[1]+circle[1]);
 			// Draws the vector
@@ -69,7 +68,7 @@
 			var a = Math.sin(angle);
 			var b = Math.cos(angle);
 			var x = 0, y = 0;
-			if(b!=0)
+			if(b != 0)
 			{
 				var sign = b / Math.abs(b);
 				x = 1 * sign;
