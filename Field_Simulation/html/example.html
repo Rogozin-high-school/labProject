@@ -1,13 +1,17 @@
 <html>
 <head></head>
 <body>
-	<canvas id='bitmap' width ='400' height = '400'></canvas>
+	<div>
+		<!---- The width and height here are not important, as what importants is the scale_canvas function !-->
+		<canvas id='bitmap' width ='800' height = '400'></canvas>
+	</div>
 	<script>
-		var time;
 		var CIRCLE_TIME = 1 * 60 * 200;
 		var CIRCLE_RADIUS = 50;
-		var FIELD_SIZE = 75;
+		var FIELD_SIZE = 90;
+		var time;
 
+		scale_canvas(1);
 		start();
 		setInterval(loop,100);
 
@@ -39,25 +43,26 @@
 			// Draws the vector
 			bitmap.beginPath();
 			bitmap.strokeStyle = "blue";
+			bitmap.lineWidth = 5;
 			bitmap.moveTo(circle[0], circle[1]);
 			bitmap.lineTo(vector[0], vector[1]);
 			bitmap.stroke();
 			bitmap.strokeStyle = "black";
 			// Draws the circle
 			bitmap.beginPath();
+			bitmap.lineWidth = 5;
 			bitmap.arc(zero[0], zero[1], CIRCLE_RADIUS, 0, 2 * Math.PI);
 			bitmap.stroke();
 		
 		}
-		function clear_lines()
+		function line(bitmap, start, end, color)
 		{
-			while(mutex);
-			mutex = true;
-			var context = document.getElementById("bitmap").getContext("2d");
-			context.fillStyle = "white";
-			context.fillRect(0,0,400,400);
-			conseole.log("cleaned");
-			mutex = false;
+			bitmap.beginPath();
+			bitmap.strokeStyle = color;
+			bitmap.moveTo(start);
+			bitmap.lineTo(end);
+			bitmap.stroke();
+			bitmap.strokeStyle = "black";
 		}
 		function circular_field(angle)
 		{
@@ -69,7 +74,7 @@
 				var sign = b / Math.abs(b);
 				x = 1 * sign;
 				y = -a / b * sign;
-				var length = Math.sqrt(x*x + y*y);
+				var length = Math.sqrt(x * x + y * y);
 				x /= length;
 				y /= length;
 				x *= FIELD_SIZE;
@@ -80,7 +85,7 @@
 				x = 0;
 				y = -a * FIELD_SIZE;
 			}
-			var arr = [Math.round(x) ,Math.round(y)];
+			var arr = [Math.round(x), Math.round(y)];
 			return arr;
 		}
 		function radians(angle)
@@ -92,6 +97,15 @@
 			var t = new Date().getTime();
 			var span = ((t - time) % CIRCLE_TIME) / CIRCLE_TIME;
 			return span; 
+		}
+
+		function scale_canvas(divide)
+		{
+			var width = window.innerWidth;
+			var height = window.innerHeight;
+			var element = document.getElementById("bitmap");
+				element.width = width / divide;
+				element.height = height / divide;
 		}
 	</script>
 </body>
