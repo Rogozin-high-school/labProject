@@ -10,7 +10,6 @@
 	<div>
 		<!---- The width and height here are not important, as what importants is the scale_canvas function !-->
 		<input type='button' value = 'remove axes' id='btn' onclick="change_axes_mode()"/>
-		<center>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspY</center>
 		<canvas id='bitmap' width ='800' height = '400'></canvas>
 	</div>
 	<script>
@@ -44,13 +43,14 @@
 				bitmap.lineWidth = 1;
 				bitmap.beginPath();
 				bitmap.moveTo(0, element.height / 2);
-				bitmap.lineTo(element.width - 20 , element.height / 2);
-				bitmap.moveTo(element.width / 2, 0);
-				bitmap.lineTo(element.width / 2, element.height);
+				bitmap.lineTo(element.width - element.width / 20 , element.height / 2);
+				bitmap.moveTo(element.width / 2, element.height / 20);
+				bitmap.lineTo(element.width / 2, element.height );
 				bitmap.stroke();
-				
+
 				bitmap.font = "15px Ariel";
-				bitmap.fillText("X", element.width - 15, element.height / 2 +5);
+				bitmap.fillText("X", element.width - element.width / 22, element.height / 2 +5);
+				bitmap.fillText("Y" , element.width / 2 - 5, element.height / 22)
 			}
 			bitmap.lineWidth = 5;
 			// Gets the circular field vector
@@ -127,7 +127,7 @@
 		function scale_canvas(divide)
 		{
 			var width = window.innerWidth;
-			var height = window.innerHeight;
+			var height = window.innerHeight * 0.88;
 			var element = document.getElementById("bitmap");
 				element.width = width / divide;
 				element.height = height / divide;
@@ -137,6 +137,7 @@
 			axes = !axes;
 			var button = document.getElementById("btn");
 			button.value = axes ? "remove axes" : "add axes";
+			document.getElementById("y").style["display"] = axes ? "" : "none";
 		}
 	</script>
 </body>
