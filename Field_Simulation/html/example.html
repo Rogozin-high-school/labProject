@@ -3,6 +3,7 @@
 <body>
 	<div>
 		<!---- The width and height here are not important, as what importants is the scale_canvas function !-->
+		<input type='button' value = 'remove axes' id='btn' onclick="change_axes_mode()"/>
 		<canvas id='bitmap' width ='800' height = '400'></canvas>
 	</div>
 	<script>
@@ -10,7 +11,7 @@
 		var CIRCLE_RADIUS = 50;
 		var FIELD_SIZE = 90;
 		var time;
-
+		var axes = true;
 		scale_canvas(1);
 		start();
 		setInterval(loop,100);
@@ -18,6 +19,9 @@
 		function start()
 		{
 			time = new Date().getTime();
+
+			var element = document.getElementById("bitmap");
+			var bitmap = element.getContext("2d");
 		}
 		
 		function loop()
@@ -27,7 +31,18 @@
 
 			// Clear previous vectors
 			bitmap.clearRect(0, 0, element.width, element.height);
-
+			// Prints the axes
+			if(axes)
+			{
+				bitmap.lineWidth = 1;
+				bitmap.beginPath();
+				bitmap.moveTo(0, element.height / 2);
+				bitmap.lineTo(element.width , element.height / 2);
+				bitmap.moveTo(element.width / 2, 0);
+				bitmap.lineTo(element.width / 2, element.height);
+				bitmap.stroke();
+			}
+			bitmap.lineWidth = 5;
 			// Gets the circular field vector
 			var angle = 360 * get_ratio();
 			angle = radians(angle);
@@ -48,7 +63,6 @@
 			line(bitmap, zero, vector, "blue");
 			// Draws the circle
 			bitmap.beginPath();
-			bitmap.lineWidth = 5;
 			bitmap.arc(zero[0], zero[1], CIRCLE_RADIUS, 0, 2 * Math.PI);
 			bitmap.stroke();
 		
@@ -107,6 +121,12 @@
 			var element = document.getElementById("bitmap");
 				element.width = width / divide;
 				element.height = height / divide;
+		}
+		function change_axes_mode()
+		{
+			axes = !axes;
+			var button = document.getElementById("btn");
+			button.value = axes ? "remove axes" : "add axes";
 		}
 	</script>
 </body>
