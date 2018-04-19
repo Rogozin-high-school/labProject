@@ -3,6 +3,7 @@
 <body>
 	<div>
 		<!---- The width and height here are not important, as what importants is the scale_canvas function !-->
+		<input type='button' value = 'remove axes' id='btn' onclick="change_axes_mode()"/>
 		<canvas id='bitmap' width ='800' height = '400'></canvas>
 	</div>
 	<script>
@@ -10,7 +11,7 @@
 		var CIRCLE_RADIUS = 50;
 		var FIELD_SIZE = 90;
 		var time;
-
+		var axes = true;
 		scale_canvas(1);
 		start();
 		setInterval(loop,100);
@@ -18,6 +19,9 @@
 		function start()
 		{
 			time = new Date().getTime();
+
+			var element = document.getElementById("bitmap");
+			var bitmap = element.getContext("2d");
 		}
 		
 		function loop()
@@ -27,44 +31,55 @@
 
 			// Clear previous vectors
 			bitmap.clearRect(0, 0, element.width, element.height);
-
+			// Prints the axes
+			if(axes)
+			{
+				bitmap.lineWidth = 1;
+				bitmap.beginPath();
+				bitmap.moveTo(0, element.height / 2);
+				bitmap.lineTo(element.width , element.height / 2);
+				bitmap.moveTo(element.width / 2, 0);
+				bitmap.lineTo(element.width / 2, element.height);
+				bitmap.stroke();
+			}
+			bitmap.lineWidth = 5;
 			// Gets the circular field vector
 			var angle = 360 * get_ratio();
 			angle = radians(angle);
 			var circle = [Math.sin(angle) * CIRCLE_RADIUS, Math.cos(angle) * CIRCLE_RADIUS];
 			var zero = [element.width / 2, element.height / 2];
 			var vector = circular_field(angle);
-
 			// Makes adjustments between vectors and canvas points
 			circle[0] += zero[0]
-			circle[1] = (circle[1] + zero[1]);
+			circle[1] += zero[1];
 			vector[0] += circle[0];
-			vector[1] = (vector[1]+circle[1]);
+			vector[1] += circle[1];
 			// Draws the vector
-			bitmap.beginPath();
-			bitmap.strokeStyle = "blue";
-			bitmap.lineWidth = 5;
-			bitmap.moveTo(circle[0], circle[1]);
-			bitmap.lineTo(vector[0], vector[1]);
-			bitmap.stroke();
-			bitmap.strokeStyle = "black";
+			line(bitmap, circle, vector, "blue");
+
+			vector = circular_field(angle, CIRCLE_RADIUS);
+			vector[0] += zero[0];
+			vector[1] += zero[1]; 
+			line(bitmap, zero, vector, "blue");
 			// Draws the circle
 			bitmap.beginPath();
-			bitmap.lineWidth = 5;
 			bitmap.arc(zero[0], zero[1], CIRCLE_RADIUS, 0, 2 * Math.PI);
 			bitmap.stroke();
 		
 		}
+
 		function line(bitmap, start, end, color)
 		{
 			bitmap.beginPath();
 			bitmap.strokeStyle = color;
-			bitmap.moveTo(start);
-			bitmap.lineTo(end);
+			bitmap.moveTo(start[0], start[1]);
+			bitmap.lineTo(end[0], end[1]);
 			bitmap.stroke();
 			bitmap.strokeStyle = "black";
 		}
-		function circular_field(angle)
+
+
+		function circular_field(angle, size = FIELD_SIZE)
 		{
 			var a = Math.sin(angle);
 			var b = Math.cos(angle);
@@ -77,13 +92,13 @@
 				var length = Math.sqrt(x * x + y * y);
 				x /= length;
 				y /= length;
-				x *= FIELD_SIZE;
-				y *= FIELD_SIZE;
+				x *= size;
+				y *= size;
 			}
 			else
 			{
 				x = 0;
-				y = -a * FIELD_SIZE;
+				y = -a * size;
 			}
 			var arr = [Math.round(x), Math.round(y)];
 			return arr;
@@ -106,6 +121,12 @@
 			var element = document.getElementById("bitmap");
 				element.width = width / divide;
 				element.height = height / divide;
+		}
+		function change_axes_mode()
+		{
+			axes = !axes;
+			var button = document.getElementById("btn");
+			button.value = axes ? "remove axes" : "add axes";
 		}
 	</script>
 </body>
