@@ -147,6 +147,27 @@ class ZUP(object):
                 return
         raise Exception("ZUP comport could not found")
 
+    def getcomports():
+        # add_and_zup = []
+        # comlist = serial.tools.list_ports.comports()
+        # for com in comlist:
+            # if com.description.find("ATEN USB to Serial Bridge") != -1:
+                # z_addres = ping(com.device)
+				# add_and_zup.append()
+        return [ZUP.ping(x.device) for x in serial.tools.list_ports.comports()\
+            if "ATEN USB to Serial Bridge" in x.description]
+				
+    def ping(com):
+        z = ZUP(com)
+        z.connect()
+        for i in range(1,4):
+            z.addr(i)
+            if(z.get_model() != None):
+                return z, i
+        return z, None
+		
+		
+
     def connect(self) -> bool:
         """ Connects to a ZUP device. """
         if self.comport == None:

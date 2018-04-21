@@ -36,7 +36,17 @@ class Magnetometer(object):
             return None
         return [float(i.strip()) for i in str(self.ser.readline(), "ascii").split(",")]
 
+    def calibrate(self):
+        self.ser.write(b"C")
+        time.sleep(11)
+        self.ser.read_all()
+
     def get_horizontal_direction(self):
         """ Returns the angle across the [xy] plane of the magnetic field vector """
-        raise NotImplementedError\
-            ("The get_horizontal_direction method of the class Magnetometer was not yet implemented")
+        m = self.get_field()
+        return m[3] if m else 0
+
+    def disconnect(self):
+        """ Closes the connection with the magnetometer device. """
+        self.ser.close()
+        self.ser = None
