@@ -4,6 +4,8 @@ import numpy as np
 from module.models.trajectory.circular2D import CircularTrajectory2D
 from module.models.field.tangential2D import TangentialField2D
 
+import module.compass.compass as compass
+
 import time
 import os
 
@@ -47,6 +49,7 @@ _working = True
 
 position = None
 fld = None
+cmp_ang = 0
 
 def render(img):
     """
@@ -68,6 +71,12 @@ def render(img):
     # Trajectory
     cv2.circle(img, (ctr_x, ctr_y), 200, (200, 200, 200), 1)
 
+    # Compass rose
+    cv2.putText(img, "N", (ctr_x - 10, ctr_y - 100), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0))
+    cv2.putText(img, "S", (ctr_x - 10, ctr_y + 120), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0))
+    cv2.putText(img, "E", (ctr_x + 100, ctr_y + 10), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0))
+    cv2.putText(img, "W", (ctr_x - 125, ctr_y + 10), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0))
+
     if position is None:
         return
 
@@ -82,6 +91,13 @@ def render(img):
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 0, 255), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 0, 255), 3)
 
+    # Compass field vector
+    if cmp_ang is not 0:
+        cmp_x = int(50 * np.cos(np.radians(cmp_ang)))
+        cmp_y = int(-50 * np.sin(np.radians(cmp_ang)))
+        cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (0, 255, 0), 3)
+        cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + cmp_x, ctr_y + cmp_y), (0, 255, 0), 3)
+    
     # Satellite
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
 
@@ -98,6 +114,9 @@ trajectory = CircularTrajectory2D(7.371e6, 90)
 display = Display("Indicators window")
 display.add_render(render)
 
+# Starting the compass module
+compass.init()
+
 t0 = time.time()
 
 while True:
@@ -108,7 +127,11 @@ while True:
     position = trajectory.disposition(dt)
     fld = field.field(position)
 
+    cmp_ang = compass.frame()
+
     display.render()
 
     if cv2.waitKey(30) & 0xFF == ord('q'):
         break
+
+compass.close()
