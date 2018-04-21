@@ -14,6 +14,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  while (Serial.available() == 0) ;
+  Serial.read();
   sensor.magUpdate();
   mX = sensor.magX();
   mY = sensor.magY();
