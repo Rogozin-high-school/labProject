@@ -98,8 +98,6 @@ def frame():
 
         ang = np.degrees(np.arctan2(vy, vx))
 
-        print(ang)
-
         history.append(ang)
         if len(history) > 5:
             del history[0]

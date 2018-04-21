@@ -147,7 +147,7 @@ class ZUP(object):
                 return
         raise Exception("ZUP comport could not found")
 
-    def getcomports():
+    def get_comports():
         # add_and_zup = []
         # comlist = serial.tools.list_ports.comports()
         # for com in comlist:
@@ -294,7 +294,7 @@ class ZUP(object):
         constant-current mode or the current limit in constnat-voltage mode. 
         """
 
-        if not amp <= 0 <= 3.5:
+        if not 0 <= amp <= 3.5:
             raise ValueError("Current can only be between 0A and 3.5A")
 
         self.send(":CUR{:05.3f};".format(amp))

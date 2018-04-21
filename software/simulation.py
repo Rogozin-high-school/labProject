@@ -6,6 +6,8 @@ from module.models.field.tangential2D import TangentialField2D
 
 import module.compass.compass as compass
 
+from module.hardware.magnetometer import Magnetometer
+
 import time
 import os
 
@@ -50,6 +52,7 @@ _working = True
 position = None
 fld = None
 cmp_ang = 0
+mgm_ang = 0
 
 def render(img):
     """
@@ -92,11 +95,19 @@ def render(img):
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 0, 255), 3)
 
     # Compass field vector
-    if cmp_ang is not 0:
+    if cmp_ang:
+        print(cmp_ang)
         cmp_x = int(50 * np.cos(np.radians(cmp_ang)))
         cmp_y = int(-50 * np.sin(np.radians(cmp_ang)))
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (0, 255, 0), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + cmp_x, ctr_y + cmp_y), (0, 255, 0), 3)
+
+    # Magnetometer field vector
+    if mgm_ang:
+        mgm_x = int(mgm_ang[0] * 0.5);
+        mgm_y = int(mgm_ang[1] * -0.5);
+        cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + mgm_x, sat_y + mgm_y), (0, 150, 0), 3)
+        cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + mgm_x, ctr_y + mgm_y), (0, 150, 0), 3)
     
     # Satellite
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
@@ -117,6 +128,10 @@ display.add_render(render)
 # Starting the compass module
 compass.init()
 
+# Magnetometer module
+mag = Magnetometer()
+mag.connect()
+
 t0 = time.time()
 
 while True:
@@ -128,6 +143,7 @@ while True:
     fld = field.field(position)
 
     cmp_ang = compass.frame()
+    mgm_ang = mag.get_field()
 
     display.render()
 
