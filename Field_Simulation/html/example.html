@@ -12,7 +12,7 @@
 		var FIELD_SIZE = 90;
 		var time;
 		var axes = true;
-		scale_canvas([2, 1.5]);
+		scale_canvas([3, 1.5]);
 		start();
 		setInterval(loop,100);
 
@@ -51,15 +51,15 @@
 			var vector = circular_field(angle);
 			// Makes adjustments between vectors and canvas points
 			circle[0] += zero[0]
-			circle[1] += zero[1];
+			circle[1] = zero[1] - circle[1];
 			vector[0] += circle[0];
-			vector[1] += circle[1];
+			vector[1] = circle[1] - vector[1];
 			// Draws the vector
 			line(bitmap, circle, vector, "blue");
 
 			vector = circular_field(angle, CIRCLE_RADIUS);
 			vector[0] += zero[0];
-			vector[1] += zero[1]; 
+			vector[1] = zero[1] - vector[1]; 
 			line(bitmap, zero, vector, "blue");
 			// Draws the circle
 			bitmap.beginPath();
