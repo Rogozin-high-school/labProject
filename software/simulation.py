@@ -3,10 +3,13 @@ import numpy as np
 
 from module.models.trajectory.circular2D import CircularTrajectory2D
 from module.models.field.tangential2D import TangentialField2D
+from module.models.physics.electricity  import field_coil
 
 import module.compass.compass as compass
 
 from module.hardware.magnetometer import Magnetometer
+
+import module.hardware.helmholtz as helmholtz
 
 import time
 import os
@@ -96,7 +99,7 @@ def render(img):
 
     # Compass field vector
     if cmp_ang:
-        print(cmp_ang)
+        #print(cmp_ang)
         cmp_x = int(50 * np.cos(np.radians(cmp_ang)))
         cmp_y = int(-50 * np.sin(np.radians(cmp_ang)))
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (0, 255, 0), 3)
@@ -104,6 +107,7 @@ def render(img):
 
     # Magnetometer field vector
     if mgm_ang:
+        print(mgm_ang)
         mgm_x = int(mgm_ang[0] * 0.5);
         mgm_y = int(mgm_ang[1] * -0.5);
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + mgm_x, sat_y + mgm_y), (0, 150, 0), 3)
@@ -126,11 +130,21 @@ display = Display("Indicators window")
 display.add_render(render)
 
 # Starting the compass module
-compass.init()
+try:
+    compass.init()
+except:
+    pass
 
 # Magnetometer module
 mag = Magnetometer()
-mag.connect()
+try:
+    mag.connect()
+except:
+    pass
+
+# Helmholtz connection
+helmholtz.init()
+helmholtz.reset()
 
 t0 = time.time()
 
@@ -142,8 +156,20 @@ while True:
     position = trajectory.disposition(dt)
     fld = field.field(position)
 
-    cmp_ang = compass.frame()
-    mgm_ang = mag.get_field()
+    f = np.copy(fld)
+    f = f * 1e-4
+    f = np.abs(field_coil(1, 150, f))
+    helmholtz.set_current(f)
+
+    try:
+        cmp_ang = compass.frame()
+    except:
+        cmp_ang = None
+    
+    try:
+        mgm_ang = mag.get_field()
+    except:
+        mgm_ang = None
 
     display.render()
 
@@ -151,3 +177,5 @@ while True:
         break
 
 compass.close()
+helmholtz.reset()
+helmholtz.close()
