@@ -106,7 +106,7 @@ class Server(object):
             port - the port to connect to.
         """
         self.port = port
-        self.sock = socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
+        self.sock = socket(AF_INET,SOCK_DGRAM) # UDP
         self.sock.bind(('', self.port))
 
     def send(self, msg : OutMsg):
@@ -122,9 +122,9 @@ class Server(object):
         Recieve a message from the satellite that contains the x and y prameters of the direction vector.
         return list (x,y)
         """
-        vec = ()
+        vec = []
         data, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
-        msg = inMag(data,0)
+        msg = InMsg(data,0)
         vec.append(str(msg.next_float()))
         vec.append(str(msg.next_float()))
         return vec
