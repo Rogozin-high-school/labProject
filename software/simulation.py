@@ -11,7 +11,7 @@ from module.hardware.magnetometer import Magnetometer
 
 import module.hardware.helmholtz as helmholtz
 
-import module.SatProtocol.server as satalite
+import module.SatProtocol.server as satallite
 
 import time
 import os
@@ -147,9 +147,9 @@ except:
 # Helmholtz connection
 helmholtz.init()
 helmholtz.reset()
-
+s = satallite.Server(raw_input("Enter the port:"))#run the server that need to be fixed(right now the recieve needs to be change)
 t0 = time.time()
-
+#thread.start_new_thread(s.recieve())
 while True:
 
     # Calculating the satellite disposition in space and the expected field we have to 
