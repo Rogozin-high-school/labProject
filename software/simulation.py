@@ -11,6 +11,8 @@ from module.hardware.magnetometer import Magnetometer
 
 import module.hardware.helmholtz as helmholtz
 
+import module.SatProtocol.server as satalite
+
 import time
 import os
 
