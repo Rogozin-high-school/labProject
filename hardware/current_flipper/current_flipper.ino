@@ -22,18 +22,19 @@ void defineOutputs() {
 
 void activate(int port, bool activate) {
   digitalWrite(getPort(port, ACTIVATION_BIT), 1 - activate);
-  delay(40);
 }
 
 void flip(int port, bool flip) {
   digitalWrite(getPort(port, CONTROL_BIT), 1 - flip);
-  delay(40);
 }
 
 void safety() {
   for (int i = 0; i < 3; i++) {
-    activate(i, false);
     flip(i, false);
+  }
+  delay(20);
+  for (int i = 0; i < 3; i++) {
+    activate(i, true);
   }
 }
 
@@ -80,7 +81,9 @@ void cmdStraight(String cmd) {
   char x = cmd[3];
   if (x >= '0' && x <= '2') {
     activate(x - '0', false);
+    delay(20);
     flip(x - '0', false);
+    delay(20);
     activate(x - '0', true);
   }
 }
@@ -89,7 +92,9 @@ void cmdFlip(String cmd) {
   char x = cmd[3];
   if (x >= '0' && x <= '2') {
     activate(x - '0', false);
+    delay(20);
     flip(x - '0', true);
+    delay(20);
     activate(x - '0', true);
   }
 }
