@@ -285,9 +285,11 @@ class ZUP(object):
         """
         Returns the actual output voltage. The actual voltage range is the same as the programming range.
         """
-
-        return float(self.send(":VOL?;")[2:])
-
+        try:
+            return float((self.send(":VOL?;"))[2:])
+        except:
+            return 100
+        
     def set_amp(self, amp : float) -> "ZUP":
         """
         Sets the output current in Amperes. This programmed currnet is the actual output voltage at

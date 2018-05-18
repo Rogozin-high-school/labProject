@@ -23,23 +23,8 @@ class BOX(object): #FUCK YOUR CONVENSIONS
         for com in comlist:
             if com.description.find("Arduino Uno") != -1:
                 self.comport = com.device
-                if not self.connect():
-                    continue
-                if "CurrentFlipper" not in self.info():
-                    self.disconnect()
-                    continue
                 return
         raise Exception("ZUP comport could not found")
-
-    def get_comports():
-        # add_and_zup = []
-        # comlist = serial.tools.list_ports.comports()
-        # for com in comlist:
-            # if com.description.find("ATEN USB to Serial Bridge") != -1:
-                # z_addres = ping(com.device)
-				# add_and_zup.append()
-        return [ZUP.ping(x.device) for x in serial.tools.list_ports.comports()\
-            if "ATEN USB to Serial Bridge" in x.description]
 				
     def ping(com):
         z = ZUP(com)
@@ -60,7 +45,7 @@ class BOX(object): #FUCK YOUR CONVENSIONS
         if self.ser:
             raise Exception("ZUP object is already connected to port")
 
-        self.ser = serial.Serial(self.comport, 9600, 8, serial.PARITY_NONE, 1, 500, True, False, False, 500)
+        self.ser = serial.Serial(self.comport, 9600)
         self.ser.close()
         self.ser.open()
 

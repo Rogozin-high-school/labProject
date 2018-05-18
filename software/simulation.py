@@ -7,8 +7,6 @@ from module.models.physics.electricity  import field_coil
 
 import module.compass.compass as compass
 
-from module.hardware.magnetometer import Magnetometer
-
 import module.hardware.helmholtz as helmholtz
 
 import module.SatProtocol.server as satallite
@@ -57,7 +55,6 @@ _working = True
 position = None
 fld = None
 cmp_ang = 0
-mgm_ang = 0
 
 def render(img):
     """
@@ -106,14 +103,6 @@ def render(img):
         cmp_y = int(-50 * np.sin(np.radians(cmp_ang)))
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (0, 255, 0), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + cmp_x, ctr_y + cmp_y), (0, 255, 0), 3)
-
-    # Magnetometer field vector
-    if mgm_ang:
-        print(mgm_ang)
-        mgm_x = int(mgm_ang[0] * 0.5);
-        mgm_y = int(mgm_ang[1] * -0.5);
-        cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + mgm_x, sat_y + mgm_y), (0, 150, 0), 3)
-        cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + mgm_x, ctr_y + mgm_y), (0, 150, 0), 3)
     
     # Satellite
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
@@ -123,7 +112,7 @@ def render(img):
 # Field strength was set for the field size to be approx. 0.5 (around 0.57)
 # Trajectory radius is based on rough real data, and time is accelerated to
 # match a circle in 1.5 mins.
-field = TangentialField2D(2.5e19)
+field = TangentialField2D(6e19)
 trajectory = CircularTrajectory2D(7.371e6, 90)
 
 # The display unit for visualizing everything
@@ -137,17 +126,13 @@ try:
 except:
     pass
 
-# Magnetometer module
-mag = Magnetometer()
-try:
-    mag.connect()
-except:
-    pass
-
 # Helmholtz connection
+print("==========  Connecting to Helmholtz coils  ==========")
 helmholtz.init()
+time.sleep(0.5)
+print("==========  Resetting Helmholtz coils  ==========")
 helmholtz.reset()
-s = satallite.Server(raw_input("Enter the port:"))#run the server that need to be fixed(right now the recieve needs to be change)
+# s = satallite.Server(raw_input("Enter the port:"))#run the server that need to be fixed(right now the recieve needs to be change)
 t0 = time.time()
 #thread.start_new_thread(s.recieve())
 while True:
@@ -160,18 +145,14 @@ while True:
 
     f = np.copy(fld)
     f = f * 1e-4
-    f = np.abs(field_coil(1, 150, f))
+    f = field_coil(1, 150, f)
     helmholtz.set_current(f)
 
     try:
-        cmp_ang = compass.frame()
+        #cmp_ang = compass.frame()
+        pass
     except:
         cmp_ang = None
-    
-    try:
-        mgm_ang = mag.get_field()
-    except:
-        mgm_ang = None
 
     display.render()
 
