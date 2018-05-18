@@ -8,11 +8,13 @@ from module.models.physics.electricity  import field_coil
 import module.compass.compass as compass
 
 import module.hardware.helmholtz as helmholtz
+import module.hardware.magnetometer as magnetometer
 
 import module.SatProtocol.server as satallite
 
 import time
 import os
+import threading
 
 class Display(object):
     """
@@ -55,6 +57,7 @@ _working = True
 position = None
 fld = None
 cmp_ang = 0
+mgm_field = None
 
 def render(img):
     """
@@ -91,10 +94,17 @@ def render(img):
 
     # Expected field vector
     if fld is not None:
-        fld_x = int(fld[0] * 100)
-        fld_y = -int(fld[1] * 100)
+        fld_x = int(fld[0] * 45)
+        fld_y = -int(fld[1] * 45)
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 0, 255), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 0, 255), 3)
+
+    # Magnetometer field vector
+    if mgm_field is not None:
+        fld_x = int(mgm_field[0] * 0.3)
+        fld_y = -int(mgm_field[1] * 0.3)
+        cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 255, 255), 3)
+        cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 255, 255), 3)
 
     # Compass field vector
     if cmp_ang:
@@ -134,7 +144,17 @@ print("==========  Resetting Helmholtz coils  ==========")
 helmholtz.reset()
 # s = satallite.Server(raw_input("Enter the port:"))#run the server that need to be fixed(right now the recieve needs to be change)
 t0 = time.time()
-#thread.start_new_thread(s.recieve())
+
+_work = True
+
+def magnet_read():
+    global mgm_field, _work
+    while _work:
+        mgm_field = magnetometer.get_field()
+
+t = threading.Thread(target=magnet_read)
+t.start()
+
 while True:
 
     # Calculating the satellite disposition in space and the expected field we have to 
@@ -162,3 +182,4 @@ while True:
 compass.close()
 helmholtz.reset()
 helmholtz.close()
+_work = False

@@ -289,7 +289,7 @@ class ZUP(object):
             return float((self.send(":VOL?;"))[2:])
         except:
             return 100
-        
+
     def set_amp(self, amp : float) -> "ZUP":
         """
         Sets the output current in Amperes. This programmed currnet is the actual output voltage at
@@ -313,9 +313,10 @@ class ZUP(object):
         """
         Returns the actual output current.
         """
-
-        return float(self.send(":CUR?;")[2:])
-
+        try:
+            return float(self.send(":CUR?;")[2:])
+        except:
+            return 100
     def set_out(self, out : OutputMode) -> "ZUP":
         """
         Sets the output to On or Off.
