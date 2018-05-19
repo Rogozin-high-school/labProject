@@ -1,17 +1,27 @@
-import cv2
-import numpy as np
+"""
+BETA Simulation software for experiment system.
+Author: Yotam Salmon
+"""
 
+# Importing imaging and calculation modules
+import numpy as np
+import cv2
+
+# Trajectories and field models
 from module.models.trajectory.circular2D import CircularTrajectory2D
 from module.models.field.tangential2D import TangentialField2D
 from module.models.physics.electricity  import field_coil
 
+# Compass module to process the compass image
 import module.compass.compass as compass
 
+# Helmholtz module to control the helmholtz coils
 import module.hardware.helmholtz as helmholtz
+
+# Magnetometer module to get magnetometer readings.
 import module.hardware.magnetometer as magnetometer
 
-import module.SatProtocol.server as satallite
-
+# Trivial imports
 import time
 import os
 import threading
@@ -52,11 +62,24 @@ class Display(object):
         """
         cv2.destroyWindow(self.name)
 
-_working = True
-
+"""
+The satellite position (height, angle) returned from the trajectory model
+"""
 position = None
+
+"""
+The current field (x, y) returned from the field model
+"""
 fld = None
+
+"""
+The compass angle read by the camera module.
+"""
 cmp_ang = 0
+
+"""
+The magnetometer field read by the magnetometer module (Android gaussmeter)
+"""
 mgm_field = None
 
 def render(img):
@@ -68,18 +91,18 @@ def render(img):
     ctr_x = 400
     ctr_y = 300
 
-    # Center
+    """ Center point """
     cv2.circle(img, (ctr_x, ctr_y), 80, (255, 200, 200), -1)
     
-    # Axes
+    """ Axes """
     cv2.arrowedLine(img, (ctr_x, ctr_y + 50), (ctr_x, ctr_y - 50), (150, 255, 150), 4)
     cv2.arrowedLine(img, (ctr_x - 50, ctr_y), (ctr_x + 50, ctr_y), (255, 150, 150), 4)
     cv2.circle(img, (ctr_x, ctr_y), 6, (150, 150, 255), -1)
 
-    # Trajectory
+    """ Trajectory """
     cv2.circle(img, (ctr_x, ctr_y), 200, (200, 200, 200), 1)
 
-    # Compass rose
+    """ Compass rose """
     cv2.putText(img, "N", (ctr_x - 10, ctr_y - 100), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0))
     cv2.putText(img, "S", (ctr_x - 10, ctr_y + 120), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0))
     cv2.putText(img, "E", (ctr_x + 100, ctr_y + 10), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0))
@@ -88,47 +111,43 @@ def render(img):
     if position is None:
         return
 
-    # Satellite position
+    """ Satellite position """
     sat_x = int(ctr_x + 200 * np.cos(np.radians(position[0])))    
     sat_y = int(ctr_y - 200 * np.sin(np.radians(position[0])))
 
-    # Expected field vector
+    """ Expected field vector """
     if fld is not None:
         fld_x = int(fld[0] * 45)
         fld_y = -int(fld[1] * 45)
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 0, 255), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 0, 255), 3)
 
-    # Magnetometer field vector
+    """ Magnetometer field vector """
     if mgm_field is not None:
         fld_x = int(mgm_field[0] * 0.3)
         fld_y = -int(mgm_field[1] * 0.3)
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 255, 255), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 255, 255), 3)
 
-    # Compass field vector
+    """ Compass field vector """
     if cmp_ang:
-        #print(cmp_ang)
         cmp_x = int(50 * np.cos(np.radians(cmp_ang)))
         cmp_y = int(-50 * np.sin(np.radians(cmp_ang)))
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (0, 255, 0), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + cmp_x, ctr_y + cmp_y), (0, 255, 0), 3)
     
-    # Satellite
+    """ Satellite """
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
 
 
-# The field and trajectory processors we want to set up
-# Field strength was set for the field size to be approx. 0.5 (around 0.57)
-# Trajectory radius is based on rough real data, and time is accelerated to
-# match a circle in 1.5 mins.
+"""
+The field and trajectory processors we want to set up
+Field strength was set for the field size to be approx. 0.5 (around 0.57)
+Trajectory radius is based on rough real data, and time is accelerated to
+match a circle in 1.5 mins.
+"""
 field = TangentialField2D(6e19)
 trajectory = CircularTrajectory2D(7.371e6, 90)
-
-# The display unit for visualizing everything
-# The renderer function is for drawing everything on the board.
-display = Display("Indicators window")
-display.add_render(render)
 
 # Starting the compass module
 try:
@@ -142,11 +161,11 @@ helmholtz.init()
 time.sleep(0.5)
 print("==========  Resetting Helmholtz coils  ==========")
 helmholtz.reset()
-# s = satallite.Server(raw_input("Enter the port:"))#run the server that need to be fixed(right now the recieve needs to be change)
-t0 = time.time()
 
+"""
+Magnetometer reading thread
+"""
 _work = True
-
 def magnet_read():
     global mgm_field, _work
     while _work:
@@ -155,6 +174,15 @@ def magnet_read():
 t = threading.Thread(target=magnet_read)
 t.start()
 
+"""
+When everything is ready, we initialize the display.
+The display unit for visualizing everything
+The renderer function is for drawing everything on the board.
+"""
+display = Display("Indicators window")
+display.add_render(render)
+
+t0 = time.time()
 while True:
 
     # Calculating the satellite disposition in space and the expected field we have to 
