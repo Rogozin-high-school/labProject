@@ -30,7 +30,7 @@ class Display(object):
     """
     Display unit for the simulation system.
     """
-    def __init__(self, _name):
+    def __init__(self, _name, interval=30):
         """
         Creates a new board
         """
@@ -38,6 +38,7 @@ class Display(object):
         self.display = cv2.namedWindow(_name)
         self.name = _name
         self.renderers = []
+        self.interval = interval
 
     def add_render(self, renderer):
         """
@@ -55,6 +56,7 @@ class Display(object):
         for r in self.renderers:
             self.screen = r(self.screen) or self.screen
         cv2.imshow(self.name, self.screen)
+        return cv2.waitKey(self.interval)
 
     def __del__(self):
         """
@@ -202,9 +204,7 @@ while True:
     except:
         cmp_ang = None
 
-    display.render()
-
-    if cv2.waitKey(30) & 0xFF == ord('q'):
+    if display.render() & 0xFF == ord('q'):
         break
 
 compass.close()
