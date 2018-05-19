@@ -21,5 +21,8 @@ def set_current(current):
         for i, e in enumerate(current):
             arr.set_cur(i, e)
 
+def connected():
+    return arr.is_connected()
+
 def close():
     arr.close()

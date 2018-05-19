@@ -30,6 +30,9 @@ import os
 import threading
 import socket
 
+# Pretty prints! :D
+from colorama import init, Fore, Style, Back
+
 class Display(object):
     """
     Display unit for the simulation system.
@@ -203,7 +206,7 @@ When everything is ready, we initialize the display.
 The display unit for visualizing everything
 The renderer function is for drawing everything on the board.
 """
-display = Display("Indicators window")
+display = Display("Indicators window", 50)
 display.add_render(render)
 
 t0 = time.time()
@@ -233,10 +236,44 @@ while True:
     mgm_field = li.get_value("lab_mag")
 
     os.system("cls")
-    print("Compass:          " + str(cmp_ang) + "deg")
-    print("Magnetometer:     " + str(mgm_field))
-    print("Satellite mgm:    " + str(sat_mgm_field))
-    print("Expected (coils): " + str(f))
+
+    print("+-----------------------------------------------+")
+    print("| Compass status              |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not cmp_ang else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    print("| Compass angle               |      ", end='')
+    print(str(round(((cmp_ang or 0) + 360 % 360), 1)).zfill(5) + "      |")
+    
+    print("+-----------------------------------------------+")
+    print("| Magnetometer status         |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not mgm_field else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    mgm_reading = ",".join(str(round(x)) for x in (mgm_field or [0, 0, 0]))
+    lspace = round((17 - len(mgm_reading)) / 2)
+    rspace = 17 - len(mgm_reading) - lspace
+    print("| Magnetometer                |", end='')
+    print(" " * lspace + mgm_reading + " " * rspace + "|")
+    
+    print("+-----------------------------------------------+")
+    print("| Sat magnetometer status     |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not sat_mgm_field else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    mgm_reading = ",".join(str(round(x)) for x in (sat_mgm_field or [0, 0, 0]))
+    lspace = round((17 - len(mgm_reading)) / 2)
+    rspace = 17 - len(mgm_reading) - lspace
+    print("| Sat magnetometer            |", end='')
+    print(" " * lspace + mgm_reading + " " * rspace + "|")
+
+    print("+-----------------------------------------------+")
+    print("| Helmholtz coils satatus     |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not helmholtz.connected() else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    mgm_reading = ",".join(str(round(x, 3)) for x in (fld if fld is not None else [0, 0]))
+    lspace = round((17 - len(mgm_reading)) / 2)
+    rspace = 17 - len(mgm_reading) - lspace
+    print("| Expected (coils)            |", end='')
+    print(" " * lspace + mgm_reading + " " * rspace + "|")
+    print("+-----------------------------------------------+")
 
     if display.render() & 0xFF == ord('q'):
         break
