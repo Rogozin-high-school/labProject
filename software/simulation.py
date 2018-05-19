@@ -4,9 +4,11 @@ Author: Yotam Salmon
 """
 
 # Importing imaging and calculation modules
+print("==========  Importing imaging and calculation modules  ==========")
 import numpy as np
 import cv2
 
+print("==========  Importing all other modules required  ==========")
 # Trajectories and field models
 from module.models.trajectory.circular2D import CircularTrajectory2D
 from module.models.field.tangential2D import TangentialField2D
@@ -18,15 +20,15 @@ import module.compass.compass as compass
 # Helmholtz module to control the helmholtz coils
 import module.hardware.helmholtz as helmholtz
 
-# Magnetometer module to get magnetometer readings.
-import module.hardware.magnetometer as magnetometer
-
-import 
+# DataHub modules
+import module.datahub.remote as re
+import module.datahub.listener as li
 
 # Trivial imports
 import time
 import os
 import threading
+import socket
 
 class Display(object):
     """
@@ -166,6 +168,7 @@ field = TangentialField2D(6e19)
 trajectory = CircularTrajectory2D(7.371e6, 90)
 
 # Starting the compass module
+print("==========  Initializing the compass module  ==========")
 try:
     compass.init()
 except:
@@ -179,16 +182,17 @@ print("==========  Resetting Helmholtz coils  ==========")
 helmholtz.reset()
 
 """
-Magnetometer reading thread
+Updating our IP in the global DataHub
 """
-_work = True
-def magnet_read():
-    global mgm_field, sat_mgm_field, _work
-    while _work:
-        mgm_field, sat_mgm_field = magnetometer.get_field()
+print("==========  Updating our address in the global DataHub  ==========")
+hub = re.DataHub("http://rogozin.space/varserver")
+hub.set({"lab_ip": socket.gethostbyname(socket.gethostname()), "lab_port": 8090})
 
-t = threading.Thread(target=magnet_read)
-t.start()
+"""
+Setting up the local DataHub to receive information
+"""
+print("==========  Initializing the local DataHub  ==========")
+li.init()
 
 """
 When everything is ready, we initialize the display.
@@ -218,6 +222,10 @@ while True:
     except:
         cmp_ang = None
 
+    sat_mgm_field = li.get_value("sat_mag")
+    if sat_mgm_field is not None:
+        sat_mgm_field = sat_mgm_field[0]
+
     os.system("cls")
     print("Compass:          " + str(cmp_ang) + "deg")
     print("Magnetometer:     " + str(mgm_field))
@@ -230,4 +238,5 @@ while True:
 compass.close()
 helmholtz.reset()
 helmholtz.close()
+li.shutdown()
 _work = False

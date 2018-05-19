@@ -30,7 +30,6 @@ def set(req):
             continue
 
         _data[i["id"]] = i["value"]
-        print(i["id"] + "=" + str(i["value"]))
         resps.append({"success": True})
     
     return 200, {"Access-Control-Allow-Origin": "*"}, json.dumps(resps)
