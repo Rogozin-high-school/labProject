@@ -1,1 +1,7 @@
 */.vscode
+*/.vs
+*/__pycache__
+
+*.pyc
+*.suo
+*.exe
