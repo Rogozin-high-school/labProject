@@ -83,6 +83,7 @@ cmp_ang = 0
 The magnetometer field read by the magnetometer module (Android gaussmeter)
 """
 mgm_field = None
+sat_mgm_field = None
 
 def render(img):
     """
@@ -169,9 +170,9 @@ Magnetometer reading thread
 """
 _work = True
 def magnet_read():
-    global mgm_field, _work
+    global mgm_field, sat_mgm_field, _work
     while _work:
-        mgm_field = magnetometer.get_field()
+        mgm_field, sat_mgm_field = magnetometer.get_field()
 
 t = threading.Thread(target=magnet_read)
 t.start()
