@@ -48,6 +48,12 @@ class CoilArray(object):
 
         return [_x, _y, _z]
 
+    def is_connected(self) -> bool:
+        """ Checks if the coil array has an ongoing connection with ZUP"""
+        if self.sups == None or self.box == None :
+            return False
+        return True
+
     def set_cur(self, index, cur):
         if self.sups == None or self.box == None:
             return False
