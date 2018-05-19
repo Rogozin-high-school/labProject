@@ -28,7 +28,7 @@ class DataHub(object):
         return json.loads(str(res, "utf-8"))
 
     def set(self, vals):
-        body = bytes(json.dumps(vals), "utf-8")
+        body = bytes(json.dumps([{"id": x, "value": y} for x, y in vals.items()]), "utf-8")
         req = urllib.request.urlopen(self.addr + self._set, body)
         res = req.read()
         return json.loads(str(res, "utf-8"))
