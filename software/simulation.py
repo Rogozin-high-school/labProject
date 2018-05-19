@@ -128,22 +128,26 @@ def render(img):
 
     """ Expected field vector """
     if fld is not None:
-        fld_x = int(fld[0] * 45)
-        fld_y = -int(fld[1] * 45)
+        fld_v = np.array(fld) * 50 / (np.linalg.norm(fld) or 1)
+        fld_x = int(fld_v[0])
+        fld_y = -int(fld_v[1])
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 0, 255), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 0, 255), 3)
 
     """ Magnetometer field vector """
     if mgm_field is not None:
-        fld_x = int(mgm_field[0] * 0.3)
-        fld_y = -int(mgm_field[1] * 0.3)
+        fld_v = np.array(mgm_field[:2]) * 50 / (np.linalg.norm(mgm_field[:2]) or 1)
+        fld_x = int(fld_v[0])
+        fld_y = -int(fld_v[1])
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 255, 255), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 255, 255), 3)
 
     """ Satellite Magnetometer field vector """
     if sat_mgm_field is not None:
-        fld_x = int(sat_mgm_field[0] * 0.3)
-        fld_y = -int(sat_mgm_field[1] * 0.3)
+        fld_v = np.array(sat_mgm_field[:2]) * 50 / (np.linalg.norm(sat_mgm_field[:2]) or 1)
+        fld_x = int(fld_v[0])
+        fld_y = -int(fld_v[1])
+        print(fld_v)
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (255, 255, 0), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (255, 255, 0), 3)
 
@@ -151,8 +155,8 @@ def render(img):
     if cmp_ang:
         cmp_x = int(50 * np.cos(np.radians(cmp_ang)))
         cmp_y = int(-50 * np.sin(np.radians(cmp_ang)))
-        cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (0, 255, 0), 3)
-        cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + cmp_x, ctr_y + cmp_y), (0, 255, 0), 3)
+        cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (255, 100, 0), 3)
+        cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + cmp_x, ctr_y + cmp_y), (255, 100, 0), 3)
     
     """ Satellite """
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
@@ -217,7 +221,7 @@ while True:
     helmholtz.set_current(f)
 
     try:
-        #cmp_ang = compass.frame()
+        cmp_ang = compass.frame()
         pass
     except:
         cmp_ang = None
