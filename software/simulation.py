@@ -83,6 +83,10 @@ cmp_ang = 0
 The magnetometer field read by the magnetometer module (Android gaussmeter)
 """
 mgm_field = None
+
+"""
+The magnetometer field read by the satellite (Raspberry PI + MPU 9250)
+"""
 sat_mgm_field = None
 
 def render(img):
@@ -131,6 +135,13 @@ def render(img):
         fld_y = -int(mgm_field[1] * 0.3)
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (0, 255, 255), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 255, 255), 3)
+
+    """ Satellite Magnetometer field vector """
+    if sat_mgm_field is not None:
+        fld_x = int(sat_mgm_field[0] * 0.3)
+        fld_y = -int(sat_mgm_field[1] * 0.3)
+        cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (255, 255, 0), 3)
+        cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (255, 255, 0), 3)
 
     """ Compass field vector """
     if cmp_ang:
