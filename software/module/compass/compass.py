@@ -64,7 +64,7 @@ cap = None
 def init():
     global cap
     cap = cv2.VideoCapture(2)
-
+    # cv2.namedWindow("Compass View")
 history = []
 
 def frame():

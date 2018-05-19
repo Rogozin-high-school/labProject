@@ -166,7 +166,8 @@ def render(img):
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
 
     """ Compass frame"""
-    img[0:150,0:200] = cmp_frame
+    if cmp_frame is not None:
+        img[0:150,0:200] = cmp_frame
 
 
 """
