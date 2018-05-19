@@ -24,18 +24,7 @@ class BOX(object): #FUCK YOUR CONVENSIONS
             if com.description.find("Arduino Uno") != -1:
                 self.comport = com.device
                 return
-        raise Exception("ZUP comport could not found")
-				
-    def ping(com):
-        z = ZUP(com)
-        z.connect()
-        for i in range(1,4):
-            z.addr(i)
-            if(z.get_model() != None):
-                return z, i
-        return z, None
-		
-		
+        raise Exception("BOX comport could not found")
 
     def connect(self) -> bool:
         """ Connects to a ZUP device. """
@@ -43,7 +32,7 @@ class BOX(object): #FUCK YOUR CONVENSIONS
             raise NotImplementedError("Automatically finding COM ports is not implemented")
         
         if self.ser:
-            raise Exception("ZUP object is already connected to port")
+            raise Exception("BOX object is already connected to port")
 
         self.ser = serial.Serial(self.comport, 9600)
         self.ser.close()
@@ -70,29 +59,7 @@ class BOX(object): #FUCK YOUR CONVENSIONS
         
         if self.ser.in_waiting:
             return str(self.ser.readline(), "ascii")[:-2]
-    
-    def addr(self, a : int) -> "ZUP":
-        """
-        Sends an :ADDRn; command. 
-        a - number 1-31, symbols which ZUP device should comply with the next commands.
-        """
 
-        if not 0 < a < 32:
-            raise ValueError("Address must be between 1 and 31")
-
-        self.send(":ADR{0:0>2};".format(a))
-        return self
-
-    def clear(self) -> "ZUP":
-        """
-        Clears the communication buffer and the following registers:
-            1. Operational status register
-            2. Alarm (fault status register)
-            3. Programming error register
-        """
-        self.send(":DCL;")
-        return self
-    
     def flip(self, a : int) -> str:
         """
         sends the flip function to the BOX

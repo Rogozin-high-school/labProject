@@ -9,17 +9,31 @@ import time
 
 class CoilArray(object):
 
-    def __init__(self):
-        print("Connecting to ZUP supplies")
+    def __init__(self, log = print):
+        log("Connecting to ZUP supplies")
+        self.sups = None
+        self.box = None
+        
         self.sups = self.get_supplies()
+        if self.sups[0] == None or self.sups[1] == None:
+            log("Failed to locate ZUP supplies")
+            self.close()
+            self.sups = None
+            return
 
-        print("Connecting to BOX")
-        self.box = BOX()
-        self.box.connect()
+        log("Connecting to BOX")
+        try:
+            self.box = BOX()
+            self.box.connect()
+        except:
+            log("Failed to connect to BOX device")
+            self.box = None
+            return
 
-        print("Getting coil resistances")
+        log("Determining coil resistances")
         self.vals = [0, 0, 0]
         self.res = self.get_resistances()
+        log("Done initializing coil array")
 
     def get_supplies(self):
         sups = ZUP.get_comports()
@@ -35,11 +49,15 @@ class CoilArray(object):
         return [_x, _y, _z]
 
     def set_cur(self, index, cur):
+        if self.sups == None or self.box == None:
+            return False
+
         if cur * self.vals[index] <= 0:
             self.set_supply_sign(index, cur)
         self.vals[index] = cur
         self.sups[index].set_amp(abs(cur))
         self.sups[index].set_volt(abs(cur * self.res[index]))
+        return True
 
     def get_resistances(self):
         res = []
@@ -73,6 +91,9 @@ class CoilArray(object):
         return res
 
     def reset_supplies(self):
+        if self.sups == None or self.box == None:
+            return False
+
         for x in self.sups:
             if x:
                 x.set_out(OutputMode.ON)
@@ -82,12 +103,15 @@ class CoilArray(object):
         self.box.straight(0)
         self.box.straight(1)
         self.box.straight(2)
+        return True
 
     def close(self):
-        for x in self.sups:
-            if x:
-                x.disconnect()
-        self.box.disconnect()
+        if self.sups != None:
+            for x in self.sups:
+                if x:
+                    x.disconnect()
+        if self.box:
+            self.box.disconnect()
 
     def zero_supply(self, index):
         if self.sups[index]:
