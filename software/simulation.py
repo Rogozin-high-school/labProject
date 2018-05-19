@@ -85,6 +85,7 @@ fld = None
 The compass angle read by the camera module.
 """
 cmp_ang = 0
+cmp_frame = None
 
 """
 The magnetometer field read by the magnetometer module (Android gaussmeter)
@@ -164,6 +165,9 @@ def render(img):
     """ Satellite """
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
 
+    """ Compass frame"""
+    img[0:150,0:200] = cmp_frame
+
 
 """
 The field and trajectory processors we want to set up
@@ -224,7 +228,8 @@ while True:
     helmholtz.set_current(f)
 
     try:
-        cmp_ang = compass.frame()
+        cmp_ang, cmp_frame = compass.frame()
+        cmp_frame = cv2.resize(cmp_frame, (200, 150))
         pass
     except:
         cmp_ang = None
