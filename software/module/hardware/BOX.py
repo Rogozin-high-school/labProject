@@ -53,6 +53,12 @@ class BOX(object): #FUCK YOUR CONVENSIONS
         self.ser.close()
         self.ser = None
 
+    def is_connected(self) -> bool:
+        """ Checks if the Box has an ongoing connection with ZUP"""
+        if not self.ser or not self.ZUP :
+            return False
+        return True
+
     def send(self, cmdtxt : str) -> str:
         self.ser.write(bytes(cmdtxt, "ascii"))
         time.sleep(0.018)
