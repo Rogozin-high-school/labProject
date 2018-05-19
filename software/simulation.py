@@ -230,6 +230,8 @@ while True:
     if sat_mgm_field is not None:
         sat_mgm_field = sat_mgm_field[0]
 
+    mgm_field = li.get_value("lab_mag")
+
     os.system("cls")
     print("Compass:          " + str(cmp_ang) + "deg")
     print("Magnetometer:     " + str(mgm_field))
