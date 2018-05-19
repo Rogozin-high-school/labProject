@@ -133,7 +133,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             response, headers, content = _get_handlers[handler](self)
             
             self.send_response(response)
-            for h, v in headers:
+            for h, v in headers.items():
                 self.send_header(h, v)
 
             self.end_headers()
@@ -161,18 +161,20 @@ class RequestHandler(BaseHTTPRequestHandler):
             response, headers, content = _post_handlers[handler](self)
             
             self.send_response(response)
-            for h, v in headers:
+            for h, v in headers.items():
                 self.send_header(h, v)
 
             self.end_headers()
 
             self.wfile.write(bytes(content, "utf-8") if type(content) == str else content)
-        
+
         else: 
             self.send_response(404)
             self.end_headers()
             self.wfile.write(bytes("404 Not Found", "utf-8"))
 
+    def log_message(self, format, *args):
+        return 5
 
 def handler(url, method = "GET"):
     global _get_handlers, _post_handlers
@@ -190,3 +192,4 @@ def run(addr, settings = {}):
     thread = threading.Thread(target=httpd.serve_forever)
     thread.start()
     return thread, httpd
+
