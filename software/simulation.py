@@ -216,6 +216,12 @@ while True:
     except:
         cmp_ang = None
 
+    os.system("cls")
+    print("Compass:          " + str(cmp_ang) + "deg")
+    print("Magnetometer:     " + str(mgm_field))
+    print("Satellite mgm:    " + str(sat_mgm_field))
+    print("Expected (coils): " + str(f))
+
     if display.render() & 0xFF == ord('q'):
         break
 
