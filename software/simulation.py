@@ -249,8 +249,8 @@ while True:
         mgm_field = None
 
     os.system("cls")
-    print(sat_ping)
-
+    print(Style.BRIGHT + Fore.MAGENTA, end='')
+    print("          Experiment system software" + Style.RESET_ALL)
     print("+-----------------------------------------------+")
     print("| Compass status              |       ", end='')
     print((Style.BRIGHT + Fore.RED + "OFF       ") if not cmp_ang else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
