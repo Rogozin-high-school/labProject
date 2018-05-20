@@ -4,11 +4,11 @@ Author: Yotam Salmon
 """
 
 # Importing imaging and calculation modules
-print("==========  Importing imaging and calculation modules  ==========")
+print("==========  Importing imaging and calculation modules".ljust(70) + "==========")
 import numpy as np
 import cv2
 
-print("==========  Importing all other modules required  ==========")
+print("==========  Importing all other modules required".ljust(70) + "==========")
 # Trajectories and field models
 from module.models.trajectory.circular2D import CircularTrajectory2D
 from module.models.field.tangential2D import TangentialField2D
@@ -180,31 +180,34 @@ field = TangentialField2D(6e19)
 trajectory = CircularTrajectory2D(7.371e6, 90)
 
 # Starting the compass module
-print("==========  Initializing the compass module  ==========")
+print("==========  Initializing the compass module".ljust(70) + "==========")
 try:
     compass.init()
 except:
     pass
 
 # Helmholtz connection
-print("==========  Connecting to Helmholtz coils  ==========")
+print("==========  Connecting to Helmholtz coils".ljust(70) + "==========")
 helmholtz.init()
 time.sleep(0.5)
-print("==========  Resetting Helmholtz coils  ==========")
+print("==========  Resetting Helmholtz coils".ljust(70) + "==========")
 helmholtz.reset()
 
 """
 Updating our IP in the global DataHub
 """
-print("==========  Updating our address in the global DataHub  ==========")
+print("==========  Updating our address in the global DataHub".ljust(70) + "==========")
 hub = re.DataHub("http://rogozin.space/varserver")
 hub.set({"lab_ip": socket.gethostbyname(socket.gethostname()), "lab_port": 8090})
 
 """
 Setting up the local DataHub to receive information
 """
-print("==========  Initializing the local DataHub  ==========")
+print("==========  Initializing the local DataHub".ljust(70) + "==========")
 li.init()
+
+print(">>>> PRESS ENTER TO START THE SIMULATION <<<<")
+input()
 
 """
 When everything is ready, we initialize the display.
@@ -235,13 +238,18 @@ while True:
     except:
         cmp_ang = None
 
-    sat_mgm_field = li.get_value("sat_mag")
-    if sat_mgm_field is not None:
+    sat_mgm_field, sat_ping = li.get_value("sat_mag"), time.time() - (li.get_timestamp("sat_mag") or 0)
+    if sat_ping < 3 and sat_mgm_field is not None:
         sat_mgm_field = sat_mgm_field[0]
+    else:
+        sat_mgm_field = None
 
-    mgm_field = li.get_value("lab_mag")
+    mgm_field, mgm_ping = li.get_value("lab_mag"), time.time() - li.get_timestamp("lab_mag")
+    if mgm_ping > 3:
+        mgm_field = None
 
     os.system("cls")
+    print(sat_ping)
 
     print("+-----------------------------------------------+")
     print("| Compass status              |       ", end='')
