@@ -5,7 +5,7 @@ Controls an array of coils.
 from .supplies import *
 from .BOX import *
 
-import matg
+import math
 
 import time
 
