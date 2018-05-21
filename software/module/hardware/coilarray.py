@@ -5,7 +5,6 @@ Controls an array of coils.
 from .supplies import *
 from .BOX import *
 
-import math
 
 import time
 
@@ -64,7 +63,7 @@ class CoilArray(object):
             self.set_supply_sign(index, cur)
         self.vals[index] = cur
         self.sups[index].set_amp(abs(cur))
-        self.sups[index].set_volt(math.min(abs(cur * self.res[index]), 58))
+        self.sups[index].set_volt(min(abs(cur * self.res[index]), 58))
         return True
 
     def get_resistances(self):
