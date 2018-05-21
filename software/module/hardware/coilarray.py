@@ -62,7 +62,7 @@ class CoilArray(object):
             self.set_supply_sign(index, cur)
         self.vals[index] = cur
         self.sups[index].set_amp(abs(cur))
-        self.sups[index].set_volt(abs(cur * self.res[index]))
+        self.sups[index].set_volt(math.min(abs(cur * self.res[index]), 58))
         return True
 
     def get_resistances(self):
