@@ -214,7 +214,7 @@ When everything is ready, we initialize the display.
 The display unit for visualizing everything
 The renderer function is for drawing everything on the board.
 """
-display = Display("Indicators window", 50)
+display = Display("Indicators window", 75)
 display.add_render(render)
 
 t0 = time.time()
@@ -288,9 +288,22 @@ while True:
     print("| Expected (coils)            |", end='')
     print(" " * lspace + mgm_reading + " " * rspace + "|")
     print("+-----------------------------------------------+")
+    print("")
+    print("Press " + Fore.LIGHTGREEN_EX + "t" + Style.RESET_ALL + " to set magnetorquer to 1")
+    print("Press " + Fore.LIGHTCYAN_EX + "y" + Style.RESET_ALL + " to set magnetorquer to 0")
+    print("Press " + Fore.LIGHTRED_EX + "u" + Style.RESET_ALL + " to set magnetorquer to -1")
 
-    if display.render() & 0xFF == ord('q'):
+    key = display.render()
+
+    if key & 0xFF == ord('q'):
         break
+
+    if key & 0xFF == ord('t'):
+        li.set_value("sat_magnetorquer", 1)
+    elif key & 0xFF == ord('y'):
+        li.set_value("sat_magnetorquer", 0)
+    elif key & 0xFF == ord('u'):
+        li.set_value("sat_magnetorquer", -1)
 
 compass.close()
 helmholtz.reset()
