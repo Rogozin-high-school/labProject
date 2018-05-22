@@ -176,7 +176,7 @@ Field strength was set for the field size to be approx. 0.5 (around 0.57)
 Trajectory radius is based on rough real data, and time is accelerated to
 match a circle in 1.5 mins.
 """
-field = TangentialField2D(6e19)
+field = TangentialField2D(10e19)
 trajectory = CircularTrajectory2D(7.371e6, 90)
 
 # Starting the compass module

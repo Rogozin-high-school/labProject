@@ -64,7 +64,7 @@ cap = None
 def init():
     global cap
     cap = cv2.VideoCapture(1)
-    # cv2.namedWindow("Compass View")
+    cv2.namedWindow("Compass View")
 history = []
 
 def frame():
@@ -114,10 +114,10 @@ def frame():
 
         cv2.line(frame, (f1, f0), (f1 + int(pointer[0]), f0 + int(pointer[1])), (255, 100, 0), 5)
         cv2.putText(frame, "North: " + str(round(nang * 1000) / 1000) + "deg", (0, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 0), 2)
-    # cv2.imshow("Compass View", frame)
+    cv2.imshow("Compass View", frame)
 
     return ang, frame
 
 def close():
-    # cv2.destroyWindow("Compass View")
+    cv2.destroyWindow("Compass View")
     pass
