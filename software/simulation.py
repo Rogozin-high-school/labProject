@@ -12,6 +12,7 @@ print("==========  Importing all other modules required".ljust(70) + "==========
 # Trajectories and field models
 from module.models.trajectory.circular2D import CircularTrajectory2D
 from module.models.field.tangential2D import TangentialField2D
+from module.models.field.constant import ConstantField
 from module.models.physics.electricity  import field_coil
 
 # Compass module to process the compass image
@@ -86,16 +87,19 @@ The compass angle read by the camera module.
 """
 cmp_ang = 0
 cmp_frame = None
+cmp_show = False
 
 """
 The magnetometer field read by the magnetometer module (Android gaussmeter)
 """
 mgm_field = None
+mgm_show = False
 
 """
 The magnetometer field read by the satellite (Raspberry PI + MPU 9250)
 """
 sat_mgm_field = None
+sat_mgm_show = False
 
 def render(img):
     """
@@ -139,7 +143,7 @@ def render(img):
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 0, 255), 3)
 
     """ Magnetometer field vector """
-    if mgm_field is not None:
+    if mgm_field is not None and mgm_show:
         fld_v = np.array(mgm_field[:2]) * 50 / (np.linalg.norm(mgm_field[:2]) or 1)
         fld_x = int(fld_v[0])
         fld_y = -int(fld_v[1])
@@ -147,16 +151,15 @@ def render(img):
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (0, 255, 255), 3)
 
     """ Satellite Magnetometer field vector """
-    if sat_mgm_field is not None:
+    if sat_mgm_field is not None and sat_mgm_show:
         fld_v = np.array(sat_mgm_field[:2]) * 50 / (np.linalg.norm(sat_mgm_field[:2]) or 1)
         fld_x = int(fld_v[0])
         fld_y = -int(fld_v[1])
-        print(fld_v)
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + fld_x, sat_y + fld_y), (255, 255, 0), 3)
         cv2.arrowedLine(img, (ctr_x, ctr_y), (ctr_x + fld_x, ctr_y + fld_y), (255, 255, 0), 3)
 
     """ Compass field vector """
-    if cmp_ang:
+    if cmp_ang and cmp_show:
         cmp_x = int(50 * np.cos(np.radians(cmp_ang)))
         cmp_y = int(-50 * np.sin(np.radians(cmp_ang)))
         cv2.arrowedLine(img, (sat_x, sat_y), (sat_x + cmp_x, sat_y + cmp_y), (255, 100, 0), 3)
@@ -166,9 +169,24 @@ def render(img):
     cv2.circle(img, (sat_x, sat_y), 5, (50, 50, 0), -1)
 
     """ Compass frame"""
-    if cmp_frame is not None:
-        img[0:150,0:200] = cmp_frame
+    # if cmp_frame is not None:
+    #     img[0:150,0:200] = cmp_frame
 
+    """ Field caption """
+    cv2.putText(img, "Field: " + field_name, (ctr_x - 110, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
+
+    """ Legends """
+    cv2.putText(img, "Gaussmeter " + ("ON" if mgm_show else "OFF"),     (600, 450), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if mgm_show else 0)       )
+    cv2.putText(img, "Sat Magnet " + ("ON" if sat_mgm_show else "OFF"), (600, 475), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if sat_mgm_show else 0)   )
+    cv2.putText(img, "Compass "    + ("ON" if cmp_show else "OFF"),     (600, 500), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if cmp_show else 0)       )
+
+
+def calc_orientation(field, sat_field):
+    tf =  np.degrees(np.arctan2(field[1], field[0]))
+    sf = np.degrees(np.arctan2(sat_field[1], sat_field[0]))
+    
+
+    return 90 + tf - sf
 
 """
 The field and trajectory processors we want to set up
@@ -176,8 +194,21 @@ Field strength was set for the field size to be approx. 0.5 (around 0.57)
 Trajectory radius is based on rough real data, and time is accelerated to
 match a circle in 1.5 mins.
 """
-field = TangentialField2D(10e19)
-trajectory = CircularTrajectory2D(7.371e6, 90)
+
+fields = [
+    ConstantField([0, 0, 0]),
+    ConstantField([-3, -1, 0]),
+    TangentialField2D(10e19)
+]
+field_names = [
+    "Natural Earth Field",
+    "Constant Field",
+    "Tangential Field"
+]
+
+field = fields[0]
+field_name = field_names[0]
+trajectory = CircularTrajectory2D(7.371e6, 300)
 
 # Starting the compass module
 print("==========  Initializing the compass module".ljust(70) + "==========")
@@ -192,6 +223,7 @@ helmholtz.init()
 time.sleep(0.5)
 print("==========  Resetting Helmholtz coils".ljust(70) + "==========")
 helmholtz.reset()
+print(helmholtz.arr.sups)
 
 """
 Updating our IP in the global DataHub
@@ -248,6 +280,11 @@ while True:
     if mgm_ping > 3:
         mgm_field = None
 
+    dtheta = None
+    if sat_mgm_field is not None:
+        dtheta = calc_orientation(fld, sat_mgm_field)
+        li.set_value("sat_rot", [0, 0, -dtheta])
+
     os.system("cls")
     print(Style.BRIGHT + Fore.MAGENTA, end='')
     print("          Experiment system software" + Style.RESET_ALL)
@@ -293,10 +330,13 @@ while True:
     print("Press " + Fore.LIGHTCYAN_EX + "y" + Style.RESET_ALL + " to set magnetorquer to 0")
     print("Press " + Fore.LIGHTRED_EX + "u" + Style.RESET_ALL + " to set magnetorquer to -1")
 
-    key = display.render()
+    print (dtheta)
 
+    key = display.render()
     if key & 0xFF == ord('q'):
         break
+
+    print(str(key) + ": " + (chr(key) if key != -1 else ""))
 
     if key & 0xFF == ord('t'):
         li.set_value("sat_magnetorquer", 1)
@@ -304,6 +344,34 @@ while True:
         li.set_value("sat_magnetorquer", 0)
     elif key & 0xFF == ord('u'):
         li.set_value("sat_magnetorquer", -1)
+
+    elif key & 0xFF == ord('1'):
+        field = fields[0]
+        field_name = field_names[0]
+    elif key & 0xFF == ord('2'):
+        field = fields[1]
+        field_name = field_names[1]
+    elif key & 0xFF == ord('3'):
+        field = fields[2]
+        field_name = field_names[2]
+
+    elif key & 0xFF == ord('a'):
+        mgm_show = True
+    elif key & 0xFF == ord('z'):
+        mgm_show = False
+
+    elif key & 0xFF == ord('s'):
+        sat_mgm_show = True
+    elif key & 0xFF == ord('x'):
+        sat_mgm_show = False
+    
+    elif key & 0xFF == ord('d'):
+        cmp_show = True
+    elif key & 0xFF == ord('c'):
+        cmp_show = False
+
+    elif key & 0xFF == ord('r'):
+        t0 = time.time()
 
 compass.close()
 helmholtz.reset()

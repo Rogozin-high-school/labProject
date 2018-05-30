@@ -34,6 +34,7 @@ class CoilArray(object):
         log("Determining coil resistances")
         self.vals = [0, 0, 0]
         self.res = self.get_resistances()
+        print("Coil resistances: " + str(self.res))
         log("Done initializing coil array")
 
     def get_supplies(self):
@@ -62,8 +63,11 @@ class CoilArray(object):
         if cur * self.vals[index] <= 0:
             self.set_supply_sign(index, cur)
         self.vals[index] = cur
-        self.sups[index].set_amp(abs(cur))
-        self.sups[index].set_volt(min(abs(cur * self.res[index]), 58))
+        try:
+            self.sups[index].set_amp(abs(cur))
+            self.sups[index].set_volt(min(abs(cur * self.res[index]), 58))
+        except:
+            return False
         return True
 
     def get_resistances(self):
@@ -81,9 +85,7 @@ class CoilArray(object):
 
             v = x.get_volt()
             a = x.get_amp()
-            while v <= 0 or v >= 100 or a == 0:
-                print((v, a))
-
+            while v <= 0 or v >= 100 or a == 0 or (v / a) < 3 or (v / a) > 15:
                 time.sleep(0.1)
                 v = x.get_volt()
                 a = x.get_amp()
@@ -123,9 +125,13 @@ class CoilArray(object):
     def zero_supply(self, index):
         if self.sups[index]:
             self.sups[index].set_volt(0)
-            while self.sups[index].get_volt() > 0.1:
-                print(self.sups[index].get_volt())
+            i = 0
+            while self.sups[index].get_volt() > 0.1 and i < 3:
+                print("Waiting for supply to shut down. Voltage: " + str(self.sups[index].get_volt()))
+                time.sleep(0.1)
+                self.sups[index].set_volt(0)
                 time.sleep(0.2)
+                i += 1
     
     def set_supply_sign(self, index, sign):
         if self.sups[index]:
@@ -135,4 +141,4 @@ class CoilArray(object):
                 self.box.straight(index)
             else:
                 self.box.flip(index)
-            self.sups[index].set_volt(volt)
+            self.sups[index].set_volt(min(58, volt))
