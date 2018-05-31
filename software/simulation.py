@@ -176,9 +176,29 @@ def render(img):
     cv2.putText(img, "Field: " + field_name, (ctr_x - 110, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
     """ Legends """
-    cv2.putText(img, "Gaussmeter " + ("ON" if mgm_show else "OFF"),     (600, 450), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if mgm_show else 0)       )
-    cv2.putText(img, "Sat Magnet " + ("ON" if sat_mgm_show else "OFF"), (600, 475), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if sat_mgm_show else 0)   )
-    cv2.putText(img, "Compass "    + ("ON" if cmp_show else "OFF"),     (600, 500), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if cmp_show else 0)       )
+    cv2.putText(img, "Gaussmeter " + ("ON" if mgm_show else "OFF"),     (550, 475), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if mgm_show else 0)       )
+    cv2.putText(img, "Sat Magnet " + ("ON" if sat_mgm_show else "OFF"), (550, 500), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if sat_mgm_show else 0)   )
+    cv2.putText(img, "Compass "    + ("ON" if cmp_show else "OFF"),     (550, 525), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if cmp_show else 0)       )
+    
+    
+    #Legends of the arrows
+    str_arrow_x = 560
+    fnl_arrow_x = 620
+    first_arrow_y = 60
+    desc_str_x = 635
+    cv2.putText(img, "Legends: ", (556, 40), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 0, 0))
+    #Expected field vector
+    cv2.arrowedLine(img,(str_arrow_x,first_arrow_y),(fnl_arrow_x,60),(0, 0, 255),3)
+    cv2.putText(img, "Expected vector", (desc_str_x, 63), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
+    #Magnetometer field vector
+    cv2.arrowedLine(img,(str_arrow_x,first_arrow_y + 20),(fnl_arrow_x,80),(0, 255, 255),3)
+    cv2.putText(img, "Magnetometer vector", (desc_str_x, 83), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
+    #Satellite Magnetometer field vector
+    cv2.arrowedLine(img,(str_arrow_x,first_arrow_y + 40),(fnl_arrow_x,100),(255, 255, 0),3)
+    cv2.putText(img, "Satellite vector", (desc_str_x, 103), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
+    #Compass field vector
+    cv2.arrowedLine(img,(str_arrow_x,first_arrow_y + 60),(fnl_arrow_x,120),(255, 100, 0),3)
+    cv2.putText(img, "Compass vector", (desc_str_x, 123), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
 
 
 def calc_orientation(field, sat_field):
