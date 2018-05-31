@@ -1,0 +1,2 @@
+BRIGHT = ""
+RESET_ALL = ""

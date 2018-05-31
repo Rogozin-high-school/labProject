@@ -32,7 +32,10 @@ import threading
 import socket
 
 # Pretty prints! :D
-from colorama import init, Fore, Style, Back
+try:
+    from colorama import Fore, Style, Back
+except:
+    from module.fakecolor import Fore, Style, Back
 
 class Display(object):
     """

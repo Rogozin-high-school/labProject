@@ -1,1 +1,2 @@
-py -3.6 simulation.py
+py -3 simulation.py
+PAUSE
