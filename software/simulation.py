@@ -178,31 +178,81 @@ def render(img):
     """ Field caption """
     cv2.putText(img, "Field: " + field_name, (ctr_x - 110, 30), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
 
+    """ Toggled buttons """
+    cv2.putText(img, "Gaussmeter " + ("ON" if mgm_show else "OFF"),     (550, 475), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 127 if mgm_show else 0, 0)       )
+    cv2.putText(img, "Sat Magnet " + ("ON" if sat_mgm_show else "OFF"), (550, 500), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 127 if sat_mgm_show else 0, 0)   )
+    cv2.putText(img, "Compass "    + ("ON" if cmp_show else "OFF"),     (550, 525), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 127 if cmp_show else 0, 0)       )
+    
+    
     """ Legends """
-    cv2.putText(img, "Gaussmeter " + ("ON" if mgm_show else "OFF"),     (550, 475), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if mgm_show else 0)       )
-    cv2.putText(img, "Sat Magnet " + ("ON" if sat_mgm_show else "OFF"), (550, 500), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if sat_mgm_show else 0)   )
-    cv2.putText(img, "Compass "    + ("ON" if cmp_show else "OFF"),     (550, 525), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 255 if cmp_show else 0)       )
-    
-    
-    #Legends of the arrows
     str_arrow_x = 560
     fnl_arrow_x = 620
     first_arrow_y = 60
     desc_str_x = 635
-    cv2.putText(img, "Legends: ", (556, 40), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 0, 0))
+    cv2.putText(img, "Legends", (556, 40), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 0, 0))
+    
     #Expected field vector
     cv2.arrowedLine(img,(str_arrow_x,first_arrow_y),(fnl_arrow_x,60),(0, 0, 255),3)
     cv2.putText(img, "Expected vector", (desc_str_x, 63), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
+    
     #Magnetometer field vector
     cv2.arrowedLine(img,(str_arrow_x,first_arrow_y + 20),(fnl_arrow_x,80),(0, 255, 255),3)
     cv2.putText(img, "Magnetometer vector", (desc_str_x, 83), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
+    
     #Satellite Magnetometer field vector
     cv2.arrowedLine(img,(str_arrow_x,first_arrow_y + 40),(fnl_arrow_x,100),(255, 255, 0),3)
     cv2.putText(img, "Satellite vector", (desc_str_x, 103), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
+    
     #Compass field vector
     cv2.arrowedLine(img,(str_arrow_x,first_arrow_y + 60),(fnl_arrow_x,120),(255, 100, 0),3)
     cv2.putText(img, "Compass vector", (desc_str_x, 123), cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 0, 0))
 
+
+def render_cmd_frame():
+    os.system("cls")
+    print(Style.BRIGHT + Fore.MAGENTA, end='')
+    print("          Experiment system software" + Style.RESET_ALL)
+    print("+-----------------------------------------------+")
+    print("| Compass status              |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not cmp_ang else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    print("| Compass angle               |      ", end='')
+    print(str(round(((cmp_ang or 0) + 360 % 360), 1)).zfill(5) + "      |")
+    
+    print("+-----------------------------------------------+")
+    print("| Magnetometer status         |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not mgm_field else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    mgm_reading = ",".join(str(round(x)) for x in (mgm_field or [0, 0, 0]))
+    lspace = round((17 - len(mgm_reading)) / 2)
+    rspace = 17 - len(mgm_reading) - lspace
+    print("| Magnetometer                |", end='')
+    print(" " * lspace + mgm_reading + " " * rspace + "|")
+    
+    print("+-----------------------------------------------+")
+    print("| Sat magnetometer status     |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not sat_mgm_field else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    mgm_reading = ",".join(str(round(x)) for x in (sat_mgm_field or [0, 0, 0]))
+    lspace = round((17 - len(mgm_reading)) / 2)
+    rspace = 17 - len(mgm_reading) - lspace
+    print("| Sat magnetometer            |", end='')
+    print(" " * lspace + mgm_reading + " " * rspace + "|")
+
+    print("+-----------------------------------------------+")
+    print("| Helmholtz coils satatus     |       ", end='')
+    print((Style.BRIGHT + Fore.RED + "OFF       ") if not helmholtz.connected() else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
+    print(Style.RESET_ALL + "|")
+    mgm_reading = ",".join(str(round(x, 3)) for x in (fld if fld is not None else [0, 0]))
+    lspace = round((17 - len(mgm_reading)) / 2)
+    rspace = 17 - len(mgm_reading) - lspace
+    print("| Expected (coils)            |", end='')
+    print(" " * lspace + mgm_reading + " " * rspace + "|")
+    print("+-----------------------------------------------+")
+    print("")
+    print("Press " + Fore.LIGHTGREEN_EX + "t" + Style.RESET_ALL + " to set magnetorquer to 1")
+    print("Press " + Fore.LIGHTCYAN_EX + "y" + Style.RESET_ALL + " to set magnetorquer to 0")
+    print("Press " + Fore.LIGHTRED_EX + "u" + Style.RESET_ALL + " to set magnetorquer to -1")
 
 def calc_orientation(field, sat_field):
     tf =  np.degrees(np.arctan2(field[1], field[0]))
@@ -261,8 +311,8 @@ Setting up the local DataHub to receive information
 print("==========  Initializing the local DataHub".ljust(70) + "==========")
 li.init()
 
-print(">>>> PRESS ENTER TO START THE SIMULATION <<<<")
-input()
+# print(">>>> PRESS ENTER TO START THE SIMULATION <<<<")
+# input()
 
 """
 When everything is ready, we initialize the display.
@@ -308,50 +358,7 @@ while True:
         dtheta = calc_orientation(fld, sat_mgm_field)
         li.set_value("sat_rot", [0, 0, -dtheta])
 
-    os.system("cls")
-    print(Style.BRIGHT + Fore.MAGENTA, end='')
-    print("          Experiment system software" + Style.RESET_ALL)
-    print("+-----------------------------------------------+")
-    print("| Compass status              |       ", end='')
-    print((Style.BRIGHT + Fore.RED + "OFF       ") if not cmp_ang else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
-    print(Style.RESET_ALL + "|")
-    print("| Compass angle               |      ", end='')
-    print(str(round(((cmp_ang or 0) + 360 % 360), 1)).zfill(5) + "      |")
-    
-    print("+-----------------------------------------------+")
-    print("| Magnetometer status         |       ", end='')
-    print((Style.BRIGHT + Fore.RED + "OFF       ") if not mgm_field else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
-    print(Style.RESET_ALL + "|")
-    mgm_reading = ",".join(str(round(x)) for x in (mgm_field or [0, 0, 0]))
-    lspace = round((17 - len(mgm_reading)) / 2)
-    rspace = 17 - len(mgm_reading) - lspace
-    print("| Magnetometer                |", end='')
-    print(" " * lspace + mgm_reading + " " * rspace + "|")
-    
-    print("+-----------------------------------------------+")
-    print("| Sat magnetometer status     |       ", end='')
-    print((Style.BRIGHT + Fore.RED + "OFF       ") if not sat_mgm_field else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
-    print(Style.RESET_ALL + "|")
-    mgm_reading = ",".join(str(round(x)) for x in (sat_mgm_field or [0, 0, 0]))
-    lspace = round((17 - len(mgm_reading)) / 2)
-    rspace = 17 - len(mgm_reading) - lspace
-    print("| Sat magnetometer            |", end='')
-    print(" " * lspace + mgm_reading + " " * rspace + "|")
-
-    print("+-----------------------------------------------+")
-    print("| Helmholtz coils satatus     |       ", end='')
-    print((Style.BRIGHT + Fore.RED + "OFF       ") if not helmholtz.connected() else (Style.BRIGHT + Fore.GREEN + "ON        "), end='')
-    print(Style.RESET_ALL + "|")
-    mgm_reading = ",".join(str(round(x, 3)) for x in (fld if fld is not None else [0, 0]))
-    lspace = round((17 - len(mgm_reading)) / 2)
-    rspace = 17 - len(mgm_reading) - lspace
-    print("| Expected (coils)            |", end='')
-    print(" " * lspace + mgm_reading + " " * rspace + "|")
-    print("+-----------------------------------------------+")
-    print("")
-    print("Press " + Fore.LIGHTGREEN_EX + "t" + Style.RESET_ALL + " to set magnetorquer to 1")
-    print("Press " + Fore.LIGHTCYAN_EX + "y" + Style.RESET_ALL + " to set magnetorquer to 0")
-    print("Press " + Fore.LIGHTRED_EX + "u" + Style.RESET_ALL + " to set magnetorquer to -1")
+    render_cmd_frame()
 
     print (dtheta)
 
