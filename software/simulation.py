@@ -13,6 +13,7 @@ print("==========  Importing all other modules required".ljust(70) + "==========
 from module.models.trajectory.circular2D import CircularTrajectory2D
 from module.models.field.tangential2D import TangentialField2D
 from module.models.field.constant import ConstantField
+from module.models.field.dipolar import DipolarField
 from module.models.physics.electricity  import field_coil
 
 # Compass module to process the compass image
@@ -271,12 +272,14 @@ match a circle in 1.5 mins.
 fields = [
     ConstantField([0, 0, 0]),
     ConstantField([-3, -1, 0]),
-    TangentialField2D(10e19)
+    TangentialField2D(10e19),
+    DipolarField(10e25)
 ]
 field_names = [
     "Natural Earth Field",
     "Constant Field",
-    "Tangential Field"
+    "Tangential Field",
+    "Depole Field"
 ]
 
 field = fields[0]
@@ -292,7 +295,9 @@ except:
 
 # Helmholtz connection
 print("==========  Connecting to Helmholtz coils".ljust(70) + "==========")
+print("Hello")
 helmholtz.init()
+print("World")
 time.sleep(0.5)
 print("==========  Resetting Helmholtz coils".ljust(70) + "==========")
 helmholtz.reset()
@@ -384,6 +389,9 @@ while True:
     elif key & 0xFF == ord('3'):
         field = fields[2]
         field_name = field_names[2]
+    elif key & 0xFF == ord('4'):
+        field = fields[3]
+        field_name = field_names[3]
 
     elif key & 0xFF == ord('a'):
         mgm_show = True

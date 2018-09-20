@@ -72,7 +72,10 @@ class CoilArray(object):
 
     def get_resistances(self):
         res = []
+        
+
         for x in self.sups:
+            print("sup: ", (x == None))
             if x == None:
                 res.append(0)
                 continue
@@ -85,11 +88,16 @@ class CoilArray(object):
 
             v = x.get_volt()
             a = x.get_amp()
+
+            print("before while")
             while v <= 0 or v >= 100 or a == 0 or (v / a) < 3 or (v / a) > 15:
+                print((v, a))
                 time.sleep(0.1)
                 v = x.get_volt()
                 a = x.get_amp()
             
+            print("after while")
+            print((v, a))
             if a == 0:
                 res.append(0)
             else:

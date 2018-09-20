@@ -2,7 +2,6 @@
 This module communicates with the Helmholtz coils via a serial interface.
 It creates a Python interface for sending and receiving commands in their purest
 form, as described in the TDK-Lambda ZUP60-3.5 manual.
-
 Remarks:
 1.  One ZUP class can control multiple Helmholtz coils (multiple power supplies)
 2.  The helmholtz coils will be addressed with a unique ID (or something similar).
@@ -328,7 +327,7 @@ class ZUP(object):
             if out not in (0, 1):
                 raise ValueError("Output mode must be 0 or 1")
 
-        self.send(":OUT{:d};".format(out)) 
+        self.send(":OUT{:d};".format(out))
         return self
 
     def get_out(self) -> OutputMode:
@@ -432,4 +431,3 @@ class ZUP(object):
     def get_overall(self):
         raise NotImplementedError()
 
-    
